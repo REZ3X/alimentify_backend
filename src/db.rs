@@ -1,14 +1,17 @@
 use mongodb::{ Client, Database, options::{ ClientOptions, ServerApi, ServerApiVersion } };
 use redis::aio::ConnectionManager;
 use anyhow::Result;
+use std::sync::Arc;
 
 use crate::config::Config;
+use crate::services::gemini_service::GeminiService;
 
 #[derive(Clone)]
 pub struct AppState {
     pub db: Database,
     pub redis: ConnectionManager,
     pub config: Config,
+    pub gemini_service: Arc<GeminiService>,
 }
 
 pub async fn setup_database(config: &Config) -> Result<Database> {
@@ -28,10 +31,20 @@ pub async fn setup_database(config: &Config) -> Result<Database> {
 }
 
 pub async fn setup_redis(config: &Config) -> Result<ConnectionManager> {
-    let client = redis::Client::open(config.redis.url.as_str())?;
-    let connection = ConnectionManager::new(client).await?;
+    tracing::info!("Attempting to connect to Redis...");
 
-    tracing::info!("Connected to Redis");
+    let client = redis::Client
+        ::open(config.redis.url.as_str())
+        .map_err(|e| anyhow::anyhow!("Failed to create Redis client: {}", e))?;
+
+    let connection = ConnectionManager::new(client).await.map_err(|e|
+        anyhow::anyhow!(
+            "Failed to connect to Redis: {}. Please check your REDIS_URL and network connectivity.",
+            e
+        )
+    )?;
+
+    tracing::info!("Successfully connected to Redis");
 
     Ok(connection)
 }

@@ -38,10 +38,19 @@ async fn main() {
 
     let redis = db::setup_redis(&config).await.expect("Failed to connect to Redis");
 
+    let gemini_api_key = std::env
+        ::var("GEMINI_API_KEY")
+        .expect("GEMINI_API_KEY must be set in environment variables");
+    let gemini_service = std::sync::Arc::new(
+        services::gemini_service::GeminiService::new(gemini_api_key)
+    );
+    tracing::info!("Initialized Gemini AI service");
+
     let state = AppState {
         db,
         redis,
         config: config.clone(),
+        gemini_service,
     };
 
     let app = routes

@@ -6,6 +6,8 @@ pub fn create_routes(state: AppState) -> Router {
     let protected_routes = Router::new()
         .route("/api/auth/logout", post(handlers::auth::logout))
         .route("/api/auth/me", get(handlers::auth::get_current_user))
+        .route("/api/nutrition/analyze", post(handlers::nutrition::analyze_food))
+        .route("/api/nutrition/quick-check", post(handlers::nutrition::quick_food_check))
         .route_layer(middleware::from_fn_with_state(state.clone(), mw::auth::auth_middleware));
 
     let public_routes = Router::new()
