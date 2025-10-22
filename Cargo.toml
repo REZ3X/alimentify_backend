@@ -1,0 +1,50 @@
+﻿[package]
+name = "alimentify"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7", features = ["macros"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
+tokio = { version = "1", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace", "compression-full"] }
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+mongodb = { version = "2.8", features = ["tokio-runtime"] }
+bson = { version = "2.9", features = ["chrono-0_4"] }
+
+redis = { version = "0.24", features = ["tokio-comp", "connection-manager", "tokio-native-tls-comp"] }
+
+jsonwebtoken = "9.2"
+oauth2 = "4.4"
+reqwest = { version = "0.11", features = ["json"] }
+bcrypt = "0.15"
+
+lettre = { version = "0.11", default-features = false, features = ["tokio1-rustls-tls", "smtp-transport", "builder", "hostname"] }
+
+dotenvy = "0.15"
+
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+anyhow = "1.0"
+thiserror = "1.0"
+
+chrono = { version = "0.4", features = ["serde"] }
+
+uuid = { version = "1.0", features = ["v4", "serde"] }
+
+futures = "0.3"
+async-trait = "0.1"
+
+rand = "0.8"
+
+config = "0.14"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
