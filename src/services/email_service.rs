@@ -59,7 +59,7 @@ pub async fn send_verification_email(
     let creds = Credentials::new(config.brevo.smtp_user.clone(), config.brevo.smtp_pass.clone());
 
     let mailer: AsyncSmtpTransport<Tokio1Executor> = AsyncSmtpTransport::<Tokio1Executor>
-        ::relay(&config.brevo.smtp_host)
+        ::starttls_relay(&config.brevo.smtp_host)
         .unwrap()
         .port(config.brevo.smtp_port)
         .credentials(creds)

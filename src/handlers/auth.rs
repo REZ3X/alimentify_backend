@@ -1,4 +1,10 @@
-﻿use axum::{ extract::{ Query, State }, http::StatusCode, response::IntoResponse, Extension, Json };
+﻿use axum::{
+    extract::{ Query, State },
+    http::{ header, StatusCode },
+    response::{ IntoResponse, Redirect },
+    Extension,
+    Json,
+};
 use chrono::Utc;
 use mongodb::bson::doc;
 use serde::{ Deserialize, Serialize };
@@ -101,11 +107,21 @@ pub async fn google_callback(
     user.email_verification_token = None;
 
     let response = AuthResponse {
-        token,
+        token: token.clone(),
         user: user.into(),
     };
 
-    Ok(Json(response))
+    let frontend_url = if state.config.is_production() {
+        state.config.security.allowed_origins
+            .first()
+            .cloned()
+            .unwrap_or_else(|| "http://localhost:3000".to_string())
+    } else {
+        "http://localhost:3000".to_string()
+    };
+
+    let redirect_url = format!("{}/?token={}", frontend_url, token);
+    Ok(Redirect::to(&redirect_url))
 }
 
 pub async fn logout(

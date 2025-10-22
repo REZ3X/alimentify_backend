@@ -67,6 +67,7 @@ pub struct SecurityConfig {
     pub cors_enabled: bool,
     pub api_key_enabled: bool,
     pub allowed_origins: Vec<String>,
+    pub require_email_verification: bool,
 }
 
 impl Config {
@@ -159,6 +160,11 @@ impl Config {
                 cors_enabled: is_production,
                 api_key_enabled: is_production,
                 allowed_origins,
+                require_email_verification: env
+                    ::var("REQUIRE_EMAIL_VERIFICATION")
+                    .unwrap_or_else(|_| (if is_production { "true" } else { "false" }).to_string())
+                    .parse()
+                    .unwrap_or(is_production),
             },
         };
 
