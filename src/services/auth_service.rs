@@ -125,6 +125,9 @@ pub async fn store_session(
     let mut conn = redis.clone();
     let user_id = user.id.as_ref().unwrap().to_hex();
 
+    let ping_result: redis::RedisResult<String> = conn.get("test_ping").await;
+    tracing::debug!("Redis ping result: {:?}", ping_result);
+
     let session = Session {
         user_id: user_id.clone(),
         email: user.gmail.clone(),
@@ -132,15 +135,21 @@ pub async fn store_session(
         expires_at: Utc::now() + Duration::hours(24),
     };
 
-    let session_json = serde_json
-        ::to_string(&session)
-        .map_err(|e| AppError::InternalError(e.into()))?;
+    let session_json = serde_json::to_string(&session).map_err(|e| {
+        tracing::error!("Failed to serialize session: {}", e);
+        AppError::InternalError(e.into())
+    })?;
+
+    tracing::debug!("Storing session for user {}: {}", user_id, session_json);
 
     let key = format!("session:{}", user_id);
 
-    conn
-        .set_ex::<_, _, ()>(&key, session_json, 86400).await
-        .map_err(|e| AppError::InternalError(e.into()))?;
+    conn.set_ex::<_, _, ()>(&key, session_json, 86400).await.map_err(|e| {
+        tracing::error!("Failed to set session in Redis: {:?}", e);
+        AppError::InternalError(anyhow::anyhow!("Redis error: {}", e))
+    })?;
+
+    tracing::info!("Successfully stored session for user {}", user_id);
 
     Ok(())
 }

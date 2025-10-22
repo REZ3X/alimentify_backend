@@ -38,7 +38,16 @@ pub async fn google_callback(
     State(state): State<AppState>,
     Query(query): Query<GoogleCallbackQuery>
 ) -> Result<impl IntoResponse> {
-    let google_user = auth_service::exchange_code_for_user(&query.code, &state.config).await?;
+    tracing::info!("Google callback received with code");
+
+    let google_user = auth_service
+        ::exchange_code_for_user(&query.code, &state.config).await
+        .map_err(|e| {
+            tracing::error!("Failed to exchange code for user: {}", e);
+            e
+        })?;
+
+    tracing::info!("Successfully exchanged code for user: {}", google_user.email);
 
     let users_collection = state.db.collection::<User>("users");
 
@@ -100,16 +109,21 @@ pub async fn google_callback(
         }
     };
 
-    let token = auth_service::generate_jwt_token(&user, &state.config)?;
+    let token = auth_service::generate_jwt_token(&user, &state.config).map_err(|e| {
+        tracing::error!("Failed to generate JWT token: {}", e);
+        e
+    })?;
 
-    auth_service::store_session(&state.redis, &user, &token).await?;
+    tracing::info!("Generated JWT token for user: {}", user.gmail);
+
+    auth_service::store_session(&state.redis, &user, &token).await.map_err(|e| {
+        tracing::error!("Failed to store session: {}", e);
+        e
+    })?;
+
+    tracing::info!("Stored session for user: {}", user.gmail);
 
     user.email_verification_token = None;
-
-    let response = AuthResponse {
-        token: token.clone(),
-        user: user.into(),
-    };
 
     let frontend_url = if state.config.is_production() {
         state.config.security.allowed_origins
@@ -121,7 +135,10 @@ pub async fn google_callback(
     };
 
     let redirect_url = format!("{}/?token={}", frontend_url, token);
-    Ok(Redirect::to(&redirect_url))
+
+    tracing::info!("Redirecting user {} to {}", user.gmail, redirect_url);
+
+    Ok(Redirect::temporary(&redirect_url))
 }
 
 pub async fn logout(
