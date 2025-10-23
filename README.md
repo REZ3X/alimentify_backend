@@ -1,204 +1,259 @@
 # Alimentify REST API Backend
 
-A secure, high-performance REST API backend for the Alimentify web application, built with Rust, Axum, MongoDB, and Redis.
+A secure, high-performance REST API backend for the Alimentify nutrition tracking application, built with Rust, Axum, MongoDB, and Redis. This backend provides comprehensive nutrition data, AI-powered food scanning, and secure user authentication.
 
 ## 🚀 Tech Stack
 
-- **Rust** - Systems programming language for performance and safety
-- **Axum** - Ergonomic web framework built on Tokio
-- **MongoDB** - NoSQL database for user data
+- **Rust 1.70+** - Systems programming language for performance and safety
+- **Axum 0.7** - Modern web framework built on Tokio
+- **MongoDB** - NoSQL database for user data and profiles
 - **Redis** - In-memory data store for session management
-- **Google OAuth 2.0** - Authentication
-- **Brevo (SMTP)** - Email verification service
-- **JWT** - Secure token-based authentication
-
-## 🔒 Security Features
-
-### Environment-Based Security
-
-- **Development Mode**:
-  - ✅ CORS disabled (allows all origins)
-  - ✅ API Key authentication disabled
-  - ✅ Detailed logging
-- **Production Mode**:
-  - 🔒 CORS enabled with strict origin checking
-  - 🔒 API Key authentication required
-  - 🔒 Optimized logging
-
-### Security Layers
-
-1. **CORS Protection** - Cross-Origin Resource Sharing restrictions
-2. **API Key Validation** - Secure API access with key validation
-3. **JWT Authentication** - Token-based user authentication
-4. **Email Verification** - User email validation via Brevo
-5. **Session Management** - Redis-based session storage
+- **Google OAuth 2.0** - Secure authentication provider
+- **Brevo SMTP** - Email verification service
+- **JWT** - Token-based authentication
+- **Gemini AI 2.0-flash** - AI-powered food image analysis
+- **USDA FoodData Central API** - Comprehensive US food database
+- **API Ninjas Nutrition API** - Global nutrition data (primary source)
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have installed:
+- Rust 1.70+ and Cargo
+- MongoDB instance (local or MongoDB Atlas)
+- Redis instance (local or Upstash)
+- Google OAuth credentials
+- Brevo SMTP account
+- Gemini API key
+- FoodData Central API key
+- API Ninjas API key
 
-- [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
-- [MongoDB](https://www.mongodb.com/try/download/community) (v4.4+)
-- [Redis](https://redis.io/download) (v6.0+)
-- [Trunk](https://trunkrs.dev/) (optional, for frontend integration)
+## 🏗️ Architecture
 
-### Windows Setup
+### Project Structure
 
-```powershell
-# Install Rust
-# Download from: https://www.rust-lang.org/tools/install
-
-# Install MongoDB
-# Download from: https://www.mongodb.com/try/download/community
-
-# Install Redis (using Chocolatey)
-choco install redis-64
-
-# Or download from: https://github.com/microsoftarchive/redis/releases
+```
+alimentify_backend/
+├── src/
+│   ├── main.rs              # Application entry point
+│   ├── config.rs            # Configuration management
+│   ├── db.rs                # Database and AppState setup
+│   ├── error.rs             # Custom error types
+│   ├── models.rs            # Data models (User, etc.)
+│   ├── routes.rs            # Route definitions
+│   ├── handlers/            # Request handlers
+│   │   ├── auth.rs          # Authentication endpoints
+│   │   ├── nutrition.rs     # Food scanning with Gemini AI
+│   │   ├── nutrition_info.rs # Ninja API nutrition search
+│   │   ├── food_wiki.rs     # FoodData Central search
+│   │   └── status.rs        # Health check
+│   ├── middleware/          # Custom middleware
+│   │   ├── auth.rs          # JWT authentication
+│   │   ├── cors.rs          # CORS configuration
+│   │   └── api_key.rs       # API key validation (production)
+│   └── services/            # External service integrations
+│       ├── auth_service.rs  # Google OAuth logic
+│       ├── email_service.rs # Email sending via Brevo
+│       ├── gemini_service.rs # Gemini AI integration
+│       ├── ninja_service.rs  # API Ninjas integration
+│       └── fdc_service.rs    # FoodData Central integration
+├── .env.local               # Environment variables (not in git)
+├── Cargo.toml               # Rust dependencies
+└── README.md                # This file
 ```
 
-## 🛠️ Setup Instructions
+### Services Overview
 
-### 1. Clone and Navigate
+1. **Authentication Service** (`auth_service.rs`)
 
-```powershell
-cd "d:\Next Project\Apps\techcomtek\alimentify_backend"
+   - Google OAuth 2.0 integration
+   - JWT token generation and validation
+   - Email verification workflow
+
+2. **Email Service** (`email_service.rs`)
+
+   - Send verification emails via Brevo SMTP
+   - Customizable email templates
+
+3. **Gemini Service** (`gemini_service.rs`)
+
+   - Analyze food images using Google Gemini AI
+   - Extract nutritional information from photos
+   - Quick food identification
+
+4. **Ninja Service** (`ninja_service.rs`)
+
+   - Query API Ninjas for nutrition data
+   - Parse nutrition facts (with premium feature detection)
+   - Primary global nutrition source
+
+5. **FDC Service** (`fdc_service.rs`)
+   - Search USDA FoodData Central database
+   - Get detailed food information by FDC ID
+   - Batch food queries
+
+## 🔧 Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd alimentify_backend
 ```
 
-### 2. Configure Environment
+### 2. Configure Environment Variables
 
-```powershell
-# Copy example env file
-Copy-Item .env.example .env.local
-```
-
-Edit `.env.local` and fill in your credentials:
+Create a `.env.local` file in the project root:
 
 ```env
-# Google OAuth (Get from Google Cloud Console)
-GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-client-secret
+# SERVER CONFIGURATION
+NODE_ENV=development
+PORT=4000
+HOST=0.0.0.0
 
-# MongoDB (local or cloud)
-MONGODB_URI=mongodb://localhost:27017
+# DATABASE - MONGODB
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority
+MONGODB_DATABASE=alimentify
 
-# Brevo Email (Get from Brevo dashboard)
-BREVO_SMTP_USER=your-brevo-user
-BREVO_SMTP_PASS=your-brevo-password
+# REDIS (Session Store)
+REDIS_URL=redis://localhost:6379
+# Or for Upstash:
+# REDIS_URL=rediss://default:<password>@<host>.upstash.io:6379
+
+# GOOGLE OAUTH
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+GOOGLE_REDIRECT_URI=http://localhost:4000/api/auth/google/callback
+
+# JWT CONFIGURATION
+JWT_SECRET=<generate-random-secret-key>
+JWT_EXPIRATION_HOURS=24
+
+# BREVO EMAIL SERVICE (SMTP)
+BREVO_SMTP_HOST=smtp-relay.brevo.com
+BREVO_SMTP_PORT=587
+BREVO_SMTP_USER=<your-brevo-user>
+BREVO_SMTP_PASS=<your-brevo-password>
 BREVO_FROM_EMAIL=noreply@yourdomain.com
+BREVO_FROM_NAME=Alimentify
+
+# SECURITY
+# API keys (disabled in development, comma-separated in production)
+API_KEYS=
+# Require email verification (default: false in dev, true in prod)
+REQUIRE_EMAIL_VERIFICATION=false
+
+# Frontend origins for CORS
+DEV_FRONTEND_ORIGIN=http://localhost:3000
+PRODUCTION_FRONTEND_ORIGIN=https://yourdomain.com
+
+# LOGGING
+RUST_LOG=alimentify=debug,tower_http=debug,axum::rejection=trace
+
+# API KEYS
+GEMINI_API_KEY=<your-gemini-api-key>
+FOOD_CENTRAL_API_KEY=<your-fdc-api-key>
+NINJA_API_KEY=<your-ninja-api-key>
 ```
 
-### 3. Start Required Services
+### 3. Install Dependencies & Build
 
-```powershell
-# Start MongoDB
-mongod --dbpath "C:\data\db"
-
-# Start Redis
-redis-server
+```bash
+cargo build --release
 ```
 
-### 4. Install Dependencies and Build
+### 4. Run the Server
 
-```powershell
-cargo build
-```
+**Development mode:**
 
-### 5. Run the Development Server
-
-```powershell
+```bash
 cargo run
 ```
 
-The API server will start on `http://localhost:4000`
+**Production mode:**
 
-### 6. Run in Production Mode
-
-```powershell
-# Set environment to production
-$env:NODE_ENV="production"
-
-# Build and run in release mode
+```bash
 cargo run --release
 ```
 
-## 📚 API Endpoints
+The server will start on `http://localhost:4000` (or the port specified in `.env.local`).
 
-### Public Endpoints (No Authentication)
+## 📚 API Documentation
+
+### Base URL
+
+```
+http://localhost:4000/api
+```
+
+### Authentication
+
+All protected endpoints require a JWT token in the Authorization header:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+### 🔓 Public Endpoints
 
 #### Health Check
 
-```
+```http
 GET /status
 ```
 
-Returns server status and health information.
-
 **Response:**
 
 ```json
 {
-  "status": "healthy",
-  "service": "Alimentify API",
-  "version": "0.1.0",
-  "timestamp": "2025-10-21T10:30:00Z",
-  "environment": "development"
+  "status": "ok",
+  "message": "Alimentify API is running",
+  "timestamp": "2025-10-23T12:00:00Z"
 }
 ```
 
-### Authentication Endpoints
-
 #### Get Google OAuth URL
 
-```
+```http
 GET /api/auth/google
 ```
-
-Returns the Google OAuth authorization URL.
 
 **Response:**
 
 ```json
 {
-  "auth_url": "https://accounts.google.com/o/oauth2/v2/auth?..."
+  "url": "https://accounts.google.com/o/oauth2/v2/auth?..."
 }
 ```
 
 #### Google OAuth Callback
 
+```http
+GET /api/auth/google/callback?code=<auth_code>
 ```
-GET /api/auth/google/callback?code={code}
-```
-
-Handles Google OAuth callback and returns JWT token.
 
 **Response:**
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token": "eyJhbGciOiJIUzI1NiIs...",
   "user": {
     "id": "507f1f77bcf86cd799439011",
-    "google_id": "1234567890",
-    "username": "johndoe",
     "name": "John Doe",
+    "username": "johndoe",
     "gmail": "john@example.com",
     "profile_image": "https://...",
-    "email_verification_status": false,
-    "email_verified_at": null,
-    "created_at": "2025-10-21T10:00:00Z",
-    "updated_at": "2025-10-21T10:00:00Z"
+    "email_verification_status": true,
+    "created_at": "2025-01-15T10:30:00Z"
   }
 }
 ```
 
 #### Verify Email
 
+```http
+GET /api/auth/verify-email?token=<verification_token>
 ```
-GET /api/auth/verify-email?token={token}
-```
-
-Verifies user email with the token sent via email.
 
 **Response:**
 
@@ -208,472 +263,496 @@ Verifies user email with the token sent via email.
 }
 ```
 
-### Protected Endpoints (Require JWT)
+---
 
-All protected endpoints require the `Authorization` header:
-
-```
-Authorization: Bearer {your-jwt-token}
-```
+### 🔒 Protected Endpoints
 
 #### Get Current User
 
-```
+```http
 GET /api/auth/me
+Authorization: Bearer <token>
 ```
-
-Returns the authenticated user's information.
 
 **Response:**
 
 ```json
 {
   "id": "507f1f77bcf86cd799439011",
-  "google_id": "1234567890",
-  "username": "johndoe",
   "name": "John Doe",
+  "username": "johndoe",
   "gmail": "john@example.com",
   "profile_image": "https://...",
   "email_verification_status": true,
-  "email_verified_at": "2025-10-21T10:30:00Z",
-  "created_at": "2025-10-21T10:00:00Z",
-  "updated_at": "2025-10-21T10:30:00Z"
+  "created_at": "2025-01-15T10:30:00Z"
 }
 ```
 
 #### Logout
 
-```
+```http
 POST /api/auth/logout
+Authorization: Bearer <token>
 ```
-
-Invalidates the user's session.
 
 **Response:**
 
-```
-204 No Content
-```
-
-## 📝 Example API Requests
-
-### Using PowerShell
-
-#### Check Server Status
-
-```powershell
-Invoke-RestMethod -Uri "http://localhost:4000/status" -Method Get
-```
-
-#### Get Google Auth URL
-
-```powershell
-$response = Invoke-RestMethod -Uri "http://localhost:4000/api/auth/google" -Method Get
-$response.auth_url
-```
-
-#### Get Current User (with JWT)
-
-```powershell
-$headers = @{
-    "Authorization" = "Bearer your-jwt-token-here"
-}
-Invoke-RestMethod -Uri "http://localhost:4000/api/auth/me" -Method Get -Headers $headers
-```
-
-#### Logout
-
-```powershell
-$headers = @{
-    "Authorization" = "Bearer your-jwt-token-here"
-}
-Invoke-RestMethod -Uri "http://localhost:4000/api/auth/logout" -Method Post -Headers $headers
-```
-
-## 🏗️ Project Structure
-
-```
-alimentify_backend/
-├── src/
-│   ├── main.rs              # Application entry point
-│   ├── config.rs            # Environment configuration
-│   ├── db.rs                # Database connections (MongoDB, Redis)
-│   ├── routes.rs            # API route definitions
-│   ├── models.rs            # Data models and DTOs
-│   ├── error.rs             # Error handling
-│   ├── handlers/            # Request handlers
-│   │   ├── mod.rs
-│   │   ├── status.rs        # Health check handler
-│   │   └── auth.rs          # Authentication handlers
-│   ├── middleware/          # Custom middleware
-│   │   ├── mod.rs
-│   │   ├── api_key.rs       # API key validation
-│   │   ├── auth.rs          # JWT authentication
-│   │   └── cors.rs          # CORS configuration
-│   └── services/            # Business logic
-│       ├── mod.rs
-│       ├── auth_service.rs  # Auth logic (Google OAuth, JWT)
-│       └── email_service.rs # Email sending (Brevo)
-├── Cargo.toml               # Project dependencies
-├── .env.example             # Environment variables template
-├── .env.local               # Local environment variables (not committed)
-├── .gitignore              # Git ignore rules
-└── README.md               # This file
-```
-
-## 🗄️ Database Schema
-
-### User Collection (MongoDB)
-
-```javascript
-{
-  "_id": ObjectId,
-  "google_id": String,
-  "profile_image": String (optional),
-  "username": String,
-  "name": String,
-  "gmail": String,
-  "email_verification_status": Boolean,
-  "email_verification_token": String (optional),
-  "email_verified_at": DateTime (optional),
-  "created_at": DateTime,
-  "updated_at": DateTime
-}
-```
-
-### Session (Redis)
-
 ```json
 {
-  "user_id": "String",
-  "email": "String",
-  "created_at": "DateTime",
-  "expires_at": "DateTime"
+  "message": "Logged out successfully"
 }
 ```
-
-**Key format:** `session:{user_id}`  
-**TTL:** 24 hours
-
-## 🔧 Development
-
-### Run with Auto-Reload
-
-```powershell
-cargo install cargo-watch
-cargo watch -x run
-```
-
-### Run Tests
-
-```powershell
-cargo test
-```
-
-### Format Code
-
-```powershell
-cargo fmt
-```
-
-### Lint Code
-
-```powershell
-cargo clippy
-```
-
-## 🌐 Google OAuth Setup
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing
-3. Enable Google+ API
-4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
-5. Set authorized redirect URI: `http://localhost:4000/api/auth/google/callback`
-6. Copy Client ID and Client Secret to `.env.local`
-
-## 📧 Brevo Email Setup
-
-1. Sign up at [Brevo](https://www.brevo.com/)
-2. Go to "SMTP & API" section
-3. Generate SMTP credentials
-4. Copy credentials to `.env.local`
-
-## 📦 Building for Production
-
-```powershell
-# Build optimized binary
-cargo build --release
-
-# The binary will be at:
-# target\release\alimentify.exe
-```
-
-## 🚀 Deployment
-
-### Deploy to VPS
-
-```powershell
-# Build for release
-cargo build --release
-
-# Copy binary and .env to server
-scp target/release/alimentify user@server:/opt/alimentify/
-scp .env.production user@server:/opt/alimentify/.env
-
-# Run on server
-./alimentify
-```
-
-### Docker Deployment (Optional)
-
-Create a `Dockerfile`:
-
-```dockerfile
-FROM rust:1.75 as builder
-WORKDIR /app
-COPY . .
-RUN cargo build --release
-
-FROM debian:bookworm-slim
-COPY --from=builder /app/target/release/alimentify /usr/local/bin/
-CMD ["alimentify"]
-```
-
-## 🔐 Security Best Practices
-
-1. **Never commit `.env.local`** - Contains sensitive credentials
-2. **Use strong JWT secrets** - Generate random 32+ character strings
-3. **Enable CORS in production** - Whitelist only your frontend domains
-4. **Use HTTPS in production** - Never use HTTP for authentication
-5. **Rotate API keys regularly** - Update keys periodically
-6. **Monitor logs** - Watch for suspicious activity
-7. **Keep dependencies updated** - Run `cargo update` regularly
-
-## 📄 License
-
-MIT License - feel free to use this project as you wish.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📞 Support
-
-For issues or questions, please open an issue in the repository.
 
 ---
 
-Built with ❤️ using Rust and Axum
+### 🍎 Nutrition Endpoints
 
-## 🚀 Tech Stack
+#### Analyze Food Image (Gemini AI)
 
-- **Rust** - Systems programming language for performance and safety
-- **Axum** - Ergonomic web framework built on Tokio
-- **Tokio** - Async runtime for Rust
-- **Trunk** - Build and bundler for WebAssembly (for frontend integration)
-- **Serde** - Serialization/deserialization
-- **Tower** - Middleware and service abstractions
+```http
+POST /api/nutrition/analyze
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
 
-## 📋 Prerequisites
-
-Before you begin, ensure you have installed:
-
-- [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
-- [Cargo](https://doc.rust-lang.org/cargo/) (comes with Rust)
-- [Trunk](https://trunkrs.dev/) (optional, for frontend):
-  ```powershell
-  cargo install trunk
-  ```
-
-## 🛠️ Setup Instructions
-
-### 1. Clone and Navigate
-
-```powershell
-cd "d:\Next Project\Apps\techcomtek"
+image: <file>
 ```
 
-### 2. Configure Environment
+**Response:**
 
-Copy the example environment file and customize it:
-
-```powershell
-Copy-Item .env.example .env
+```json
+{
+  "analysis": "This appears to be a bowl of oatmeal with banana slices...",
+  "nutritional_info": {
+    "calories": 350,
+    "protein": 12,
+    "carbohydrates": 58,
+    "fat": 8,
+    "fiber": 10
+  }
+}
 ```
 
-Edit `.env` file with your preferred settings (port, database URL, etc.)
+#### Quick Food Check (Gemini AI)
 
-### 3. Install Dependencies
+```http
+POST /api/nutrition/quick-check
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
 
-```powershell
-cargo build
+image: <file>
 ```
 
-### 4. Run the Development Server
+**Response:**
 
-```powershell
-cargo run
+```json
+{
+  "food_name": "Banana",
+  "confidence": "high",
+  "quick_facts": "Rich in potassium, good source of vitamin B6"
+}
 ```
 
-The API server will start on `http://localhost:3000` (or your configured PORT).
+---
 
-### 5. Run in Release Mode (Production)
+### 🥗 Nutrition Info (API Ninjas - Primary)
 
-```powershell
-cargo run --release
+#### Search Nutrition Info
+
+```http
+GET /api/nutrition-info?query=<food_query>
+Authorization: Bearer <token>
 ```
 
-## 📚 API Endpoints
+**Example:**
 
-### Health Check
-
-- `GET /` - Root health check
-- `GET /api/health` - Detailed health status
-
-### Items/Products
-
-- `GET /api/v1/items` - List all items
-- `POST /api/v1/items` - Create a new item
-- `GET /api/v1/items/:id` - Get item by ID
-- `PUT /api/v1/items/:id` - Update item by ID
-- `DELETE /api/v1/items/:id` - Delete item by ID
-
-### Users
-
-- `GET /api/v1/users` - List all users
-- `POST /api/v1/users` - Create a new user
-- `GET /api/v1/users/:id` - Get user by ID
-
-## 📝 Example API Requests
-
-### Create an Item
-
-```powershell
-curl -X POST http://localhost:3000/api/v1/items `
-  -H "Content-Type: application/json" `
-  -d '{
-    "name": "Apple",
-    "description": "Fresh red apple",
-    "price": 2.50,
-    "quantity": 100,
-    "category": "Fruits"
-  }'
+```http
+GET /api/nutrition-info?query=100g chicken breast
 ```
 
-### Get All Items
+**Response:**
 
-```powershell
-curl http://localhost:3000/api/v1/items
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "name": "chicken breast",
+      "calories": 165.0,
+      "serving_size_g": 100.0,
+      "fat_total_g": 3.6,
+      "fat_saturated_g": 1.0,
+      "protein_g": 31.0,
+      "sodium_mg": 74,
+      "potassium_mg": 256,
+      "cholesterol_mg": 85,
+      "carbohydrates_total_g": 0.0,
+      "fiber_g": 0.0,
+      "sugar_g": 0.0
+    }
+  ],
+  "message": null
+}
 ```
 
-### Create a User
+**Note:** Free tier shows "Only available for premium subscribers" for some fields (calories, serving_size_g, protein_g). The API will return 0.0 for these fields.
 
-```powershell
-curl -X POST http://localhost:3000/api/v1/users `
-  -H "Content-Type: application/json" `
-  -d '{
-    "username": "johndoe",
-    "email": "john@example.com"
-  }'
+---
+
+### 📖 Food Wiki (USDA FoodData Central - US Focus)
+
+#### Search Foods
+
+```http
+GET /api/food-wiki/search?query=<search_term>&pageNumber=1&pageSize=20
+Authorization: Bearer <token>
 ```
 
-## 🏗️ Project Structure
+**Query Parameters:**
 
-```
-alimentify/
-├── src/
-│   ├── main.rs           # Application entry point
-│   ├── routes.rs         # API route definitions
-│   ├── models.rs         # Data models and DTOs
-│   ├── error.rs          # Error handling
-│   └── handlers/         # Request handlers
-│       ├── mod.rs
-│       ├── health.rs
-│       ├── items.rs
-│       └── users.rs
-├── Cargo.toml            # Project dependencies
-├── .env.example          # Environment variables template
-└── README.md             # This file
+- `query` (required): Search term
+- `pageNumber` (optional): Page number (default: 1)
+- `pageSize` (optional): Results per page (default: 20, max: 200)
+- `dataType` (optional): Filter by data type (e.g., "Branded,Foundation")
+
+**Example:**
+
+```http
+GET /api/food-wiki/search?query=apple&pageNumber=1&pageSize=10
 ```
 
-## 🔧 Development
+**Response:**
 
-### Run with Auto-Reload
+```json
+{
+  "success": true,
+  "data": {
+    "totalHits": 1245,
+    "currentPage": 1,
+    "totalPages": 125,
+    "foods": [
+      {
+        "fdcId": 171688,
+        "description": "Apple, raw",
+        "dataType": "Foundation",
+        "gtinUpc": null,
+        "brandOwner": null,
+        "brandName": null,
+        "ingredients": null,
+        "foodNutrients": [...]
+      }
+    ]
+  }
+}
+```
 
-Install cargo-watch:
+#### Get Food Details
 
-```powershell
+```http
+GET /api/food-wiki/:fdc_id
+Authorization: Bearer <token>
+```
+
+**Example:**
+
+```http
+GET /api/food-wiki/171688
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "fdcId": 171688,
+    "description": "Apple, raw",
+    "dataType": "Foundation",
+    "foodClass": "FinalFood",
+    "foodCategory": {
+      "id": 9,
+      "code": "0900",
+      "description": "Fruits and Fruit Juices"
+    },
+    "foodNutrients": [
+      {
+        "id": 1234,
+        "amount": 52.0,
+        "nutrient": {
+          "id": 1008,
+          "number": "208",
+          "name": "Energy",
+          "unitName": "kcal"
+        }
+      }
+    ],
+    "foodPortions": [
+      {
+        "id": 1,
+        "amount": 1.0,
+        "modifier": "medium",
+        "gramWeight": 182.0
+      }
+    ]
+  }
+}
+```
+
+#### Get Multiple Foods
+
+```http
+POST /api/food-wiki/foods
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "fdcIds": [171688, 171689, 171690]
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "fdcId": 171688,
+      "description": "Apple, raw",
+      ...
+    },
+    {
+      "fdcId": 171689,
+      "description": "Banana, raw",
+      ...
+    }
+  ]
+}
+```
+
+---
+
+## 🔐 Security Features
+
+### Middleware
+
+1. **CORS Middleware** (`middleware/cors.rs`)
+
+   - Enabled in development for `http://localhost:3000`
+   - Configurable for production origins
+   - Allows credentials, common headers
+
+2. **API Key Middleware** (`middleware/api_key.rs`)
+
+   - Disabled in development (`NODE_ENV=development`)
+   - Required in production
+   - Validates `X-API-Key` header
+
+3. **Auth Middleware** (`middleware/auth.rs`)
+   - Validates JWT tokens
+   - Extracts user information
+   - Protects all `/api/auth/me`, `/api/nutrition/*`, `/api/food-wiki/*`, etc.
+
+### Authentication Flow
+
+1. User clicks "Login with Google" → Frontend redirects to `/api/auth/google`
+2. Backend generates Google OAuth URL
+3. User authorizes on Google
+4. Google redirects to `/api/auth/google/callback?code=...`
+5. Backend exchanges code for user info
+6. Backend creates/updates user in MongoDB
+7. Backend generates JWT token
+8. Frontend stores token in localStorage
+9. Frontend includes token in `Authorization: Bearer <token>` header for protected routes
+
+### Email Verification
+
+- Optional in development (`REQUIRE_EMAIL_VERIFICATION=false`)
+- Sends verification email via Brevo SMTP
+- Verification link: `/api/auth/verify-email?token=<token>`
+- Token expires after 24 hours
+
+---
+
+## 🧪 Testing
+
+### Manual Testing with cURL
+
+**Health Check:**
+
+```bash
+curl http://localhost:4000/status
+```
+
+**Get Nutrition Info:**
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  "http://localhost:4000/api/nutrition-info?query=100g%20apple"
+```
+
+**Search Food Wiki:**
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  "http://localhost:4000/api/food-wiki/search?query=chicken&pageSize=5"
+```
+
+**Analyze Food Image:**
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "image=@/path/to/food.jpg" \
+  http://localhost:4000/api/nutrition/analyze
+```
+
+---
+
+## 🚀 Deployment
+
+### Environment-Specific Configuration
+
+The backend automatically detects the environment from `NODE_ENV`:
+
+- **Development** (`NODE_ENV=development`):
+
+  - CORS enabled for localhost
+  - API key validation disabled
+  - Email verification optional
+  - Detailed logging
+
+- **Production** (`NODE_ENV=production`):
+  - CORS restricted to `PRODUCTION_FRONTEND_ORIGIN`
+  - API key validation enabled
+  - Email verification enforced
+  - Error details hidden
+
+### Deployment Options
+
+1. **VPS/Dedicated Server**
+
+   ```bash
+   cargo build --release
+   ./target/release/alimentify
+   ```
+
+2. **Docker**
+
+   ```dockerfile
+   FROM rust:1.70 as builder
+   WORKDIR /app
+   COPY . .
+   RUN cargo build --release
+
+   FROM debian:bookworm-slim
+   COPY --from=builder /app/target/release/alimentify /usr/local/bin/
+   CMD ["alimentify"]
+   ```
+
+3. **Cloud Platforms**
+   - Railway, Fly.io, Render: Connect repo and configure build command
+   - AWS/GCP/Azure: Deploy as container or binary
+
+### Production Checklist
+
+- [ ] Set `NODE_ENV=production`
+- [ ] Configure `PRODUCTION_FRONTEND_ORIGIN`
+- [ ] Add production API keys to `API_KEYS`
+- [ ] Set secure `JWT_SECRET` (32+ random characters)
+- [ ] Enable `REQUIRE_EMAIL_VERIFICATION=true`
+- [ ] Use production MongoDB and Redis instances
+- [ ] Configure firewall rules (only allow 4000 from frontend)
+- [ ] Set up SSL/TLS (use reverse proxy like Nginx)
+- [ ] Monitor logs (`RUST_LOG=alimentify=info`)
+
+---
+
+## 📊 Error Handling
+
+All errors return JSON responses:
+
+```json
+{
+  "error": "Error message here"
+}
+```
+
+**HTTP Status Codes:**
+
+- `200 OK` - Success
+- `400 Bad Request` - Invalid input
+- `401 Unauthorized` - Missing/invalid token
+- `403 Forbidden` - Insufficient permissions
+- `404 Not Found` - Resource not found
+- `422 Unprocessable Entity` - Validation error
+- `500 Internal Server Error` - Server error
+
+---
+
+## 🛠️ Development Tips
+
+### Enable Debug Logging
+
+```env
+RUST_LOG=alimentify=debug,tower_http=debug,axum::rejection=trace
+```
+
+### Watch Mode (Auto-reload)
+
+Install `cargo-watch`:
+
+```bash
 cargo install cargo-watch
-```
-
-Then run:
-
-```powershell
 cargo watch -x run
-```
-
-### Run Tests
-
-```powershell
-cargo test
 ```
 
 ### Format Code
 
-```powershell
+```bash
 cargo fmt
 ```
 
 ### Lint Code
 
-```powershell
+```bash
 cargo clippy
 ```
 
-## 🗄️ Database Integration
-
-The current implementation uses in-memory storage. To integrate a real database (PostgreSQL):
-
-1. Uncomment the `sqlx` dependency in `Cargo.toml`
-2. Set up your database and update `DATABASE_URL` in `.env`
-3. Create migrations and replace the in-memory storage in handlers
-
-## 🌐 CORS Configuration
-
-CORS is currently configured to allow all origins. For production, update the CORS layer in `main.rs`:
-
-```rust
-let cors = CorsLayer::new()
-    .allow_origin("https://yourdomain.com".parse::<HeaderValue>().unwrap())
-    .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
-    .allow_headers([AUTHORIZATION, CONTENT_TYPE]);
-```
-
-## 📦 Building for Production
-
-```powershell
-cargo build --release
-```
-
-The optimized binary will be in `target/release/alimentify.exe`
-
-## 🚀 Deployment
-
-The compiled binary can be deployed to:
-
-- VPS or dedicated server
-- Docker container
-- Cloud platforms (AWS, Azure, GCP)
-- Platform-as-a-Service (Heroku, Railway, Fly.io)
+---
 
 ## 📄 License
 
 MIT License - feel free to use this project as you wish.
 
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
 ## 📞 Support
 
-For issues or questions, please open an issue in the repository.
+For issues or questions:
+
+- Open an issue in the repository
+- Check existing documentation
+- Review error logs (`RUST_LOG=debug`)
+
+---
+
+## 🔗 Related Resources
+
+- [Axum Documentation](https://docs.rs/axum)
+- [MongoDB Rust Driver](https://docs.rs/mongodb)
+- [Google OAuth 2.0](https://developers.google.com/identity/protocols/oauth2)
+- [Gemini API](https://ai.google.dev/docs)
+- [USDA FoodData Central](https://fdc.nal.usda.gov/api-guide.html)
+- [API Ninjas](https://www.api-ninjas.com/api/nutrition)
