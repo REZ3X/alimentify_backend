@@ -5,6 +5,8 @@ use std::sync::Arc;
 
 use crate::config::Config;
 use crate::services::gemini_service::GeminiService;
+use crate::services::fdc_service::FdcService;
+use crate::services::ninja_service::NinjaService;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -12,6 +14,8 @@ pub struct AppState {
     pub redis: ConnectionManager,
     pub config: Config,
     pub gemini_service: Arc<GeminiService>,
+    pub fdc_service: Arc<FdcService>,
+    pub ninja_service: Arc<NinjaService>,
 }
 
 pub async fn setup_database(config: &Config) -> Result<Database> {

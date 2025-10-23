@@ -46,11 +46,27 @@ async fn main() {
     );
     tracing::info!("Initialized Gemini AI service");
 
+    let fdc_api_key = std::env
+        ::var("FOOD_CENTRAL_API_KEY")
+        .expect("FOOD_CENTRAL_API_KEY must be set in environment variables");
+    let fdc_service = std::sync::Arc::new(services::fdc_service::FdcService::new(fdc_api_key));
+    tracing::info!("Initialized FDC (Food Data Central) service");
+
+    let ninja_api_key = std::env
+        ::var("NINJA_NUTRITION_API_KEY")
+        .expect("NINJA_NUTRITION_API_KEY must be set in environment variables");
+    let ninja_service = std::sync::Arc::new(
+        services::ninja_service::NinjaService::new(ninja_api_key)
+    );
+    tracing::info!("Initialized Ninja Nutrition service");
+
     let state = AppState {
         db,
         redis,
         config: config.clone(),
         gemini_service,
+        fdc_service,
+        ninja_service,
     };
 
     let app = routes

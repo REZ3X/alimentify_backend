@@ -8,6 +8,10 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/auth/me", get(handlers::auth::get_current_user))
         .route("/api/nutrition/analyze", post(handlers::nutrition::analyze_food))
         .route("/api/nutrition/quick-check", post(handlers::nutrition::quick_food_check))
+        .route("/api/nutrition-info", get(handlers::nutrition_info::get_nutrition_info))
+        .route("/api/food-wiki/search", get(handlers::food_wiki::search_foods))
+        .route("/api/food-wiki/:fdc_id", get(handlers::food_wiki::get_food_details))
+        .route("/api/food-wiki/foods", post(handlers::food_wiki::get_foods))
         .route_layer(middleware::from_fn_with_state(state.clone(), mw::auth::auth_middleware));
 
     let public_routes = Router::new()
