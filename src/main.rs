@@ -60,6 +60,9 @@ async fn main() {
     );
     tracing::info!("Initialized Ninja Nutrition service");
 
+    let mealdb_service = std::sync::Arc::new(services::mealdb_service::MealDbService::new());
+    tracing::info!("Initialized MealDB service");
+
     let state = AppState {
         db,
         redis,
@@ -67,6 +70,7 @@ async fn main() {
         gemini_service,
         fdc_service,
         ninja_service,
+        mealdb_service,
     };
 
     let app = routes

@@ -68,7 +68,10 @@ pub async fn exchange_code_for_user(code: &str, config: &Config) -> Result<Googl
     let token_result = client
         .exchange_code(AuthorizationCode::new(code.to_string()))
         .request_async(oauth2::reqwest::async_http_client).await
-        .map_err(|e| AppError::BadRequest(format!("Failed to exchange code: {}", e)))?;
+        .map_err(|e| {
+            tracing::error!("OAuth code exchange failed: {:?}", e);
+            AppError::BadRequest(format!("Failed to exchange code: {}", e))
+        })?;
 
     let access_token = token_result.access_token().secret();
 
@@ -88,8 +91,13 @@ pub fn generate_jwt_token(user: &User, config: &Config) -> Result<String> {
     let now = Utc::now().timestamp();
     let exp = now + config.jwt.expiration_hours * 3600;
 
+    let user_id = user.id
+        .as_ref()
+        .ok_or_else(|| AppError::InternalError(anyhow::anyhow!("User has no ID")))?
+        .to_hex();
+
     let claims = Claims {
-        sub: user.id.as_ref().unwrap().to_hex(),
+        sub: user_id,
         email: user.gmail.clone(),
         exp,
         iat: now,
@@ -123,7 +131,10 @@ pub async fn store_session(
     _token: &str
 ) -> Result<()> {
     let mut conn = redis.clone();
-    let user_id = user.id.as_ref().unwrap().to_hex();
+    let user_id = user.id
+        .as_ref()
+        .ok_or_else(|| AppError::InternalError(anyhow::anyhow!("User has no ID")))?
+        .to_hex();
 
     let ping_result: redis::RedisResult<String> = conn.get("test_ping").await;
     tracing::debug!("Redis ping result: {:?}", ping_result);

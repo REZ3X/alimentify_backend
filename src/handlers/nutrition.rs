@@ -1,7 +1,6 @@
 use axum::{ extract::State, http::StatusCode, response::IntoResponse, Json };
 use axum_extra::extract::Multipart;
 use serde::{ Deserialize, Serialize };
-use std::sync::Arc;
 
 use crate::{ db::AppState, error::AppError };
 
@@ -10,6 +9,21 @@ pub struct NutritionAnalysisResponse {
     pub success: bool,
     pub analysis: String,
     pub timestamp: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct FoodTextRequest {
+    pub food_description: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct FoodNutritionDetails {
+    pub food_name: String,
+    pub calories: f64,
+    pub protein_g: f64,
+    pub carbs_g: f64,
+    pub fat_g: f64,
+    pub serving_size: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -143,4 +157,26 @@ pub async fn quick_food_check(
     };
 
     Ok((StatusCode::OK, Json(response)))
+}
+
+pub async fn analyze_food_text(
+    State(state): State<AppState>,
+    Json(payload): Json<FoodTextRequest>
+) -> Result<impl IntoResponse, AppError> {
+    tracing::info!("Received request for text-based food analysis: {}", payload.food_description);
+
+    if payload.food_description.trim().is_empty() {
+        return Err(AppError::BadRequest("Food description cannot be empty".to_string()));
+    }
+
+    let nutrition_data = state.gemini_service
+        .analyze_food_from_text(&payload.food_description).await
+        .map_err(|e| {
+            tracing::error!("Gemini API error: {}", e);
+            AppError::InternalError(e)
+        })?;
+
+    tracing::info!("Successfully analyzed food from text");
+
+    Ok((StatusCode::OK, Json(nutrition_data)))
 }

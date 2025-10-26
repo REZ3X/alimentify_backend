@@ -187,4 +187,91 @@ Be as accurate as possible based on visual analysis. If you cannot clearly ident
 
         Ok(analysis_text)
     }
+
+    pub async fn get_text_response(&self, prompt: &str) -> Result<String> {
+        let request_body = GeminiRequest {
+            contents: vec![Content {
+                parts: vec![Part::Text {
+                    text: prompt.to_string(),
+                }],
+            }],
+        };
+
+        let url = format!(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={}",
+            self.api_key
+        );
+
+        let response = self.client.post(&url).json(&request_body).send().await?;
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let error_text = response.text().await?;
+            anyhow::bail!("Gemini API request failed: {} - {}", status, error_text);
+        }
+
+        let gemini_response: GeminiResponse = response.json().await?;
+
+        let text = gemini_response.candidates
+            .first()
+            .and_then(|c| c.content.parts.first())
+            .map(|p| p.text.clone())
+            .ok_or_else(|| anyhow::anyhow!("No response from Gemini API"))?;
+
+        Ok(text)
+    }
+
+    pub async fn analyze_food_from_text(
+        &self,
+        food_description: &str
+    ) -> Result<serde_json::Value> {
+        let prompt =
+            format!(r#"Analyze the following food description and provide detailed nutrition information.
+
+Food Description: {}
+
+Provide the response ONLY as a valid JSON object with this exact structure (no additional text):
+{{
+    "food_name": "the food name",
+    "calories": <number>,
+    "protein_g": <number>,
+    "carbs_g": <number>,
+    "fat_g": <number>,
+    "serving_size": "serving description"
+}}
+
+Guidelines:
+1. Use reasonable estimates for nutrition values based on standard servings
+2. If a portion size is mentioned (e.g., "200g", "2 slices"), use that for calculations
+3. If no portion is specified, assume a standard serving size
+4. All numeric values should be numbers (not strings)
+5. serving_size should describe what the nutrition values represent
+6. Be accurate but reasonable with estimates
+
+Return ONLY the JSON object, nothing else."#, food_description);
+
+        let response_text = self.get_text_response(&prompt).await?;
+
+        let json_str = if let Some(start) = response_text.find('{') {
+            if let Some(end) = response_text.rfind('}') {
+                &response_text[start..=end]
+            } else {
+                &response_text
+            }
+        } else {
+            &response_text
+        };
+
+        let nutrition_data: serde_json::Value = serde_json
+            ::from_str(json_str)
+            .map_err(|e|
+                anyhow::anyhow!(
+                    "Failed to parse AI response as JSON: {}. Response was: {}",
+                    e,
+                    response_text
+                )
+            )?;
+
+        Ok(nutrition_data)
+    }
 }

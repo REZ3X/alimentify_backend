@@ -7,6 +7,7 @@ use crate::config::Config;
 use crate::services::gemini_service::GeminiService;
 use crate::services::fdc_service::FdcService;
 use crate::services::ninja_service::NinjaService;
+use crate::services::mealdb_service::MealDbService;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -16,6 +17,7 @@ pub struct AppState {
     pub gemini_service: Arc<GeminiService>,
     pub fdc_service: Arc<FdcService>,
     pub ninja_service: Arc<NinjaService>,
+    pub mealdb_service: Arc<MealDbService>,
 }
 
 pub async fn setup_database(config: &Config) -> Result<Database> {
