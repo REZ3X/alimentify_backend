@@ -16,7 +16,7 @@ pub async fn send_verification_email(
     token: &str
 ) -> Result<()> {
     let verification_url = format!(
-        "{}/verify-email?token={}",
+        "{}/auth/verify-email?token={}",
         config.security.allowed_origins.first().unwrap_or(&"http://localhost:3000".to_string()),
         token
     );

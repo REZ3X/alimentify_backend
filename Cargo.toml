@@ -45,6 +45,7 @@ async-trait = "0.1"
 rand = "0.8"
 
 config = "0.14"
+urlencoding = "2.1"
 
 [profile.release]
 opt-level = 3

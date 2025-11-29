@@ -123,22 +123,24 @@ pub async fn get_daily_meals(
         AppError::BadRequest("Invalid user ID".to_string())
     )?;
 
-    let target_date = if let Some(date_str) = query.date {
+    let naive_date = if let Some(date_str) = query.date {
         NaiveDate::parse_from_str(&date_str, "%Y-%m-%d")
             .map_err(|_| AppError::BadRequest("Invalid date format. Use YYYY-MM-DD".to_string()))?
-            .and_hms_opt(0, 0, 0)
-            .ok_or_else(|| AppError::BadRequest("Invalid date".to_string()))?
     } else {
-        Utc::now().naive_utc()
+        Utc::now().date_naive()
     };
 
-    let start_of_day = Utc.from_utc_datetime(&target_date);
+    let start_of_day = naive_date
+        .and_hms_opt(0, 0, 0)
+        .ok_or_else(|| AppError::BadRequest("Invalid date".to_string()))?;
+    let start_of_day = Utc.from_utc_datetime(&start_of_day);
+    
     let end_of_day = start_of_day + chrono::Duration::days(1);
 
     tracing::info!(
         "Fetching meals for user {} on date {} (start: {}, end: {})",
         claims.sub,
-        target_date.format("%Y-%m-%d"),
+        naive_date.format("%Y-%m-%d"),
         start_of_day,
         end_of_day
     );
@@ -158,16 +160,20 @@ pub async fn get_daily_meals(
         tracing::info!("  Meal: id={:?}, date={:?}, food={}", meal.id, meal.date, meal.food_name);
     }
 
+    let start_bson = mongodb::bson::DateTime::from_chrono(start_of_day);
+    let end_bson = mongodb::bson::DateTime::from_chrono(end_of_day);
+
     let filter =
         doc! {
         "user_id": user_id,
         "date": {
-            "$gte": start_of_day,
-            "$lt": end_of_day
+            "$gte": start_bson,
+            "$lt": end_bson
         }
     };
 
     tracing::info!("Query filter: {:?}", filter);
+    tracing::info!("Looking for meals between {} and {}", start_bson, end_bson);
 
     let mut cursor = state.db
         .collection::<MealLog>("meal_logs")
@@ -176,12 +182,30 @@ pub async fn get_daily_meals(
 
     let mut meals = Vec::new();
     while cursor.advance().await.map_err(|e| AppError::InternalError(e.into()))? {
-        let meal = cursor.deserialize_current().map_err(|e| AppError::InternalError(e.into()))?;
+        let meal = cursor.deserialize_current().map_err(|e| {
+            tracing::error!("Failed to deserialize meal: {}", e);
+            AppError::InternalError(e.into())
+        })?;
         tracing::info!("Found meal: {:?}", meal);
         meals.push(meal);
     }
 
-    tracing::info!("Total meals found: {}", meals.len());
+    tracing::info!("Total meals found with date query: {}", meals.len());
+
+    if meals.is_empty() && !all_meals.is_empty() {
+        tracing::warn!("No meals found with date query, filtering manually from all meals");
+        meals = all_meals.into_iter()
+            .filter(|meal| {
+                let meal_date = meal.date;
+                let in_range = meal_date >= start_of_day && meal_date < end_of_day;
+                if in_range {
+                    tracing::info!("Meal {} is in range: {}", meal.food_name, meal_date);
+                }
+                in_range
+            })
+            .collect();
+        tracing::info!("Manually filtered meals: {}", meals.len());
+    }
 
     let daily_totals = calculate_daily_totals(&state, user_id, start_of_day).await?;
 
@@ -190,7 +214,7 @@ pub async fn get_daily_meals(
             serde_json::json!({
         "meals": meals,
         "daily_totals": daily_totals,
-        "date": target_date.format("%Y-%m-%d").to_string(),
+        "date": naive_date.format("%Y-%m-%d").to_string(),
     })
         )
     )
@@ -330,34 +354,71 @@ async fn calculate_daily_totals(
     let start_of_day = Utc.from_utc_datetime(&start_of_day);
     let end_of_day = start_of_day + chrono::Duration::days(1);
 
+    let start_bson = mongodb::bson::DateTime::from_chrono(start_of_day);
+    let end_bson = mongodb::bson::DateTime::from_chrono(end_of_day);
+
+    use futures::TryStreamExt;
+    let all_meals_cursor = state.db
+        .collection::<MealLog>("meal_logs")
+        .find(doc! { "user_id": user_id }, None).await
+        .map_err(|e| AppError::InternalError(e.into()))?;
+
+    let all_meals: Vec<MealLog> = all_meals_cursor
+        .try_collect().await
+        .map_err(|e| AppError::InternalError(e.into()))?;
+
+    tracing::info!("calculate_daily_totals: Total meals in DB for user: {}", all_meals.len());
+
     let mut cursor = state.db
         .collection::<MealLog>("meal_logs")
         .find(
             doc! {
                 "user_id": user_id,
                 "date": {
-                    "$gte": start_of_day,
-                    "$lt": end_of_day
+                    "$gte": start_bson,
+                    "$lt": end_bson
                 }
             },
             None
         ).await
         .map_err(|e| AppError::InternalError(e.into()))?;
 
+    let mut meals_in_range = Vec::new();
+    while cursor.advance().await.map_err(|e| AppError::InternalError(e.into()))? {
+        let meal: MealLog = cursor
+            .deserialize_current()
+            .map_err(|e| AppError::InternalError(e.into()))?;
+        meals_in_range.push(meal);
+    }
+
+    tracing::info!("calculate_daily_totals: Found {} meals with date query", meals_in_range.len());
+
+    if meals_in_range.is_empty() && !all_meals.is_empty() {
+        tracing::warn!("calculate_daily_totals: No meals found with date query, filtering manually");
+        meals_in_range = all_meals.into_iter()
+            .filter(|meal| {
+                let meal_date = meal.date;
+                meal_date >= start_of_day && meal_date < end_of_day
+            })
+            .collect();
+        tracing::info!("calculate_daily_totals: Manually filtered {} meals", meals_in_range.len());
+    }
+
     let mut total_calories = 0.0;
     let mut total_protein = 0.0;
     let mut total_carbs = 0.0;
     let mut total_fat = 0.0;
 
-    while cursor.advance().await.map_err(|e| AppError::InternalError(e.into()))? {
-        let meal: MealLog = cursor
-            .deserialize_current()
-            .map_err(|e| AppError::InternalError(e.into()))?;
+    for meal in meals_in_range {
+        tracing::info!("Including meal in totals: {} - {}cal", meal.food_name, meal.calories);
         total_calories += meal.calories;
         total_protein += meal.protein_g;
         total_carbs += meal.carbs_g;
         total_fat += meal.fat_g;
     }
+
+    tracing::info!("calculate_daily_totals: Totals - calories: {}, protein: {}, carbs: {}, fat: {}", 
+        total_calories, total_protein, total_carbs, total_fat);
 
     let user = state.db
         .collection::<User>("users")

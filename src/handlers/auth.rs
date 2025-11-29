@@ -53,10 +53,13 @@ pub async fn google_callback(
 
     tracing::info!("Searching for existing user with google_id: {}", google_user.id);
 
+    let is_new_user: bool;
+
     let user = match
         users_collection.find_one(doc! { "google_id": &google_user.id }, None).await
     {
         Ok(Some(mut user)) => {
+            is_new_user = false;
             tracing::info!("Existing user found: {}", user.gmail);
 
             let user_id = user.id.ok_or_else(|| {
@@ -91,6 +94,7 @@ pub async fn google_callback(
             user
         }
         Ok(None) => {
+            is_new_user = true;
             tracing::info!("No existing user found, creating new user");
             let username = google_user.email.split('@').next().unwrap_or("user").to_string();
 
@@ -184,7 +188,11 @@ pub async fn google_callback(
         "http://localhost:3000".to_string()
     };
 
-    let redirect_url = format!("{}/?token={}", frontend_url, token);
+    let redirect_url = if is_new_user {
+        format!("{}/auth/check-email?email={}", frontend_url, urlencoding::encode(&user.gmail))
+    } else {
+        format!("{}/?token={}", frontend_url, token)
+    };
 
     tracing::info!("Redirecting user {} to {}", user.gmail, redirect_url);
 
@@ -228,7 +236,7 @@ pub async fn verify_email(
 ) -> Result<Json<serde_json::Value>> {
     let users_collection = state.db.collection::<User>("users");
 
-    let user = users_collection
+    let mut user = users_collection
         .find_one(doc! { "email_verification_token": &query.token }, None).await
         .map_err(|e| AppError::InternalError(e.into()))?
         .ok_or_else(|| AppError::NotFound("Invalid verification token".to_string()))?;
@@ -248,8 +256,18 @@ pub async fn verify_email(
         ).await
         .map_err(|e| AppError::InternalError(e.into()))?;
 
+    user.email_verification_status = true;
+    user.email_verified_at = Some(Utc::now());
+    user.email_verification_token = None;
+
+    let token = auth_service::generate_jwt_token(&user, &state.config)?;
+
+    auth_service::store_session(&state.redis, &user, &token).await?;
+
     Ok(Json(json!({
-        "message": "Email verified successfully"
+        "message": "Email verified successfully",
+        "token": token,
+        "user": UserResponse::from(user)
     })))
 }
 
