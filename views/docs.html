@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alimentify API Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .code-font {
+        font-family: "JetBrains Mono", monospace;
+      }
+      pre {
+        font-family: "JetBrains Mono", monospace;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-950 text-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <a
+              href="/"
+              class="text-2xl font-bold text-white hover:text-purple-400 transition-colors"
+              >Alimentify API</a
+            >
+            <span class="text-gray-500">/</span>
+            <span class="text-gray-400">Documentation</span>
+          </div>
+          <a href="/" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+      <!-- Header -->
+      <div
+        class="bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-2xl p-8 mb-8 border border-purple-800/50"
+      >
+        <h1 class="text-4xl font-bold text-white mb-3">API Documentation</h1>
+        <p class="text-gray-300 text-lg mb-4">
+          Complete reference for Alimentify Backend API endpoints
+        </p>
+        <div class="flex items-center gap-4 text-sm">
+          <span
+            class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30"
+            >Version 0.3.1</span
+          >
+          <span
+            class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30"
+            >Base URL: http://localhost:4000</span
+          >
+        </div>
+      </div>
+
+      <!-- Quick Navigation -->
+      <div class="bg-gray-900 rounded-2xl p-6 mb-8 border border-gray-800">
+        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fas fa-compass text-purple-400"></i>
+          Quick Navigation
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <a
+            href="#auth"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-shield-alt text-purple-400 mr-2"></i>Authentication
+          </a>
+          <a
+            href="#health"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-heart-pulse text-red-400 mr-2"></i>Health Profile
+          </a>
+          <a
+            href="#meals"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-utensils text-green-400 mr-2"></i>Meals
+          </a>
+          <a
+            href="#nutrition"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-brain text-cyan-400 mr-2"></i>AI Nutrition
+          </a>
+          <a
+            href="#nutrition-info"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-info-circle text-blue-400 mr-2"></i>Nutrition Info
+          </a>
+          <a
+            href="#food-wiki"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-book text-yellow-400 mr-2"></i>Food Wiki
+          </a>
+          <a
+            href="#recipes"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-book-open text-orange-400 mr-2"></i>Recipes
+          </a>
+          <a
+            href="#status"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-server text-emerald-400 mr-2"></i>System
+          </a>
+        </div>
+      </div>
+
+      <!-- Authentication Section -->
+      <div
+        id="auth"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-shield-alt text-purple-400"></i>
+          Authentication
+        </h2>
+
+        <!-- Google Auth URL -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">
+              Get Google Auth URL
+            </h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/auth/google</code
+          >
+          <p class="text-gray-400 mb-4">
+            Initiates Google OAuth 2.0 authentication flow.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "auth_url": "https://accounts.google.com/o/oauth2/v2/auth?..."
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-500">
+            <i class="fas fa-lock-open"></i>
+            <span>Public endpoint - No authentication required</span>
+          </div>
+        </div>
+
+        <!-- Google Callback -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">
+              Google OAuth Callback
+            </h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/auth/google/callback</code
+          >
+          <p class="text-gray-400 mb-4">
+            Handles OAuth callback and creates/logs in user.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg">
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">code</code>
+                <span class="text-gray-400"
+                  >OAuth authorization code from Google</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>// For new users:
+Redirect to: {FRONTEND_URL}/auth/check-email?email={email}
+
+// For existing verified users:
+Redirect to: {FRONTEND_URL}/?token={jwt_token}</code></pre>
+          </div>
+        </div>
+
+        <!-- Verify Email -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Verify Email</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/auth/verify-email</code
+          >
+          <p class="text-gray-400 mb-4">
+            Verifies user email and returns JWT token for auto-login.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg">
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">token</code>
+                <span class="text-gray-400">Email verification token</span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "message": "Email verified successfully",
+  "token": "jwt_token_here",
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com",
+    "name": "User Name"
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- Get Current User -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get Current User</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/auth/me</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves authenticated user information.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "id": "user_id",
+  "email": "user@example.com",
+  "name": "User Name",
+  "picture": "profile_picture_url"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Logout -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Logout</h3>
+            <span
+              class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/auth/logout</code
+          >
+          <p class="text-gray-400 mb-4">
+            Logs out the current user and invalidates session.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "message": "Logged out successfully"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Profile Section -->
+      <div
+        id="health"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-heart-pulse text-red-400"></i>
+          Health Profile
+        </h2>
+
+        <!-- Create/Update Profile -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">
+              Create or Update Profile
+            </h3>
+            <span
+              class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/health/profile</code
+          >
+          <p class="text-gray-400 mb-4">
+            Creates or updates user health profile and calculates daily
+            nutrition targets.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}
+Content-Type: application/json</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Request Body:
+            </h4>
+            <pre
+              class="bg-gray-950 text-yellow-300 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "age": 25,
+  "gender": "male",
+  "height_cm": 175,
+  "weight_kg": 70,
+  "activity_level": "moderately_active",
+  "goal": "maintain_weight"
+}</code></pre>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Activity Levels:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300">
+              <div class="mb-1">
+                <code class="text-purple-300">sedentary</code> - Little or no
+                exercise
+              </div>
+              <div class="mb-1">
+                <code class="text-purple-300">lightly_active</code> - Light
+                exercise 1-3 days/week
+              </div>
+              <div class="mb-1">
+                <code class="text-purple-300">moderately_active</code> -
+                Moderate exercise 3-5 days/week
+              </div>
+              <div class="mb-1">
+                <code class="text-purple-300">very_active</code> - Hard exercise
+                6-7 days/week
+              </div>
+              <div>
+                <code class="text-purple-300">extremely_active</code> - Very
+                hard exercise & physical job
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Goals:</h4>
+            <div class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300">
+              <div class="mb-1">
+                <code class="text-purple-300">lose_weight</code> - 500 calorie
+                deficit
+              </div>
+              <div class="mb-1">
+                <code class="text-purple-300">maintain_weight</code> -
+                Maintenance calories
+              </div>
+              <div>
+                <code class="text-purple-300">gain_weight</code> - 500 calorie
+                surplus
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "profile": {
+    "age": 25,
+    "gender": "male",
+    "height_cm": 175,
+    "weight_kg": 70,
+    "activity_level": "moderately_active",
+    "goal": "maintain_weight",
+    "daily_calories": 2500,
+    "daily_protein_g": 140,
+    "daily_carbs_g": 281,
+    "daily_fat_g": 83
+  }
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Profile -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get Health Profile</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/health/profile</code
+          >
+          <p class="text-gray-400 mb-4">Retrieves user's health profile.</p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "profile": {
+    "age": 25,
+    "gender": "male",
+    "height_cm": 175,
+    "weight_kg": 70,
+    "activity_level": "moderately_active",
+    "goal": "maintain_weight",
+    "daily_calories": 2500,
+    "daily_protein_g": 140,
+    "daily_carbs_g": 281,
+    "daily_fat_g": 83
+  }
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meals Section -->
+      <div
+        id="meals"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-utensils text-green-400"></i>
+          Meal Tracking
+        </h2>
+
+        <!-- Log Meal -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Log Meal</h3>
+            <span
+              class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/meals/log</code
+          >
+          <p class="text-gray-400 mb-4">
+            Logs a meal entry with nutritional information.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}
+Content-Type: application/json</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Request Body:
+            </h4>
+            <pre
+              class="bg-gray-950 text-yellow-300 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "meal_type": "breakfast",
+  "food_name": "Scrambled Eggs",
+  "calories": 250,
+  "protein_g": 18,
+  "carbs_g": 2,
+  "fat_g": 20,
+  "serving_size": "2 eggs",
+  "notes": "With butter"
+}</code></pre>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Meal Types:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300">
+              <code class="text-purple-300">breakfast</code>,
+              <code class="text-purple-300">lunch</code>,
+              <code class="text-purple-300">dinner</code>,
+              <code class="text-purple-300">snack</code>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "meal": {
+    "id": "meal_id",
+    "user_id": "user_id",
+    "meal_type": "breakfast",
+    "food_name": "Scrambled Eggs",
+    "calories": 250,
+    "protein_g": 18,
+    "carbs_g": 2,
+    "fat_g": 20,
+    "serving_size": "2 eggs",
+    "notes": "With butter",
+    "created_at": "2025-01-01T08:00:00Z"
+  }
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Daily Meals -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get Daily Meals</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/meals/daily?date=2025-01-01</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves all meals for a specific date with daily totals.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg">
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">date</code>
+                <span class="text-gray-400"
+                  >Date in YYYY-MM-DD format (optional, defaults to today)</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "meals": [...],
+  "daily_totals": {
+    "total_calories": 1850,
+    "total_protein_g": 120,
+    "total_carbs_g": 180,
+    "total_fat_g": 65,
+    "target_calories": 2500,
+    "target_protein_g": 140,
+    "target_carbs_g": 281,
+    "target_fat_g": 83,
+    "calories_remaining": 650,
+    "protein_remaining_g": 20,
+    "carbs_remaining_g": 101,
+    "fat_remaining_g": 18
+  }
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Update Meal -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Update Meal</h3>
+            <span
+              class="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >PUT</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/meals/{meal_id}</code
+          >
+          <p class="text-gray-400 mb-4">Updates an existing meal entry.</p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Request Body:
+            </h4>
+            <pre
+              class="bg-gray-950 text-yellow-300 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "food_name": "Updated Food Name",
+  "calories": 300,
+  "protein_g": 20,
+  "carbs_g": 5,
+  "fat_g": 22
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Delete Meal -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Delete Meal</h3>
+            <span
+              class="bg-red-500/20 text-red-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >DELETE</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/meals/{meal_id}</code
+          >
+          <p class="text-gray-400 mb-4">Deletes a meal entry.</p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "message": "Meal deleted successfully"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Nutrition Section -->
+      <div
+        id="nutrition"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-brain text-cyan-400"></i>
+          AI Nutrition Analysis
+        </h2>
+
+        <!-- Analyze Food Image -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Analyze Food Image</h3>
+            <span
+              class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/nutrition/analyze</code
+          >
+          <p class="text-gray-400 mb-4">
+            Analyzes food image using Google Gemini AI to extract nutritional
+            information.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}
+Content-Type: multipart/form-data</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Form Data:</h4>
+            <div class="bg-gray-950 p-4 rounded-lg">
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">image</code>
+                <span class="text-gray-400"
+                  >Image file (max 10MB, JPEG/PNG)</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "analysis": "{\n  \"food_name\": \"Cheeseburger\",\n  \"serving_size\": \"1 burger\",\n  \"calories\": \"600-700\",\n  \"macronutrients\": {\n    \"protein\": \"30-35g\",\n    \"carbohydrates\": \"45-50g\",\n    \"fat\": \"35-40g\"\n  },\n  \"health_score\": 5,\n  \"health_notes\": \"...\",\n  \"recommendations\": \"...\"\n}",
+  "timestamp": "2025-01-01T12:00:00Z"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Analyze Food Text -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">
+              Analyze Food from Text
+            </h3>
+            <span
+              class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/nutrition/analyze-text</code
+          >
+          <p class="text-gray-400 mb-4">
+            Analyzes food description and provides nutrition information.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Request Body:
+            </h4>
+            <pre
+              class="bg-gray-950 text-yellow-300 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "food_description": "200g grilled chicken breast"
+}</code></pre>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "food_name": "Grilled Chicken Breast",
+  "calories": 330,
+  "protein_g": 62,
+  "carbs_g": 0,
+  "fat_g": 7,
+  "serving_size": "200g"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Quick Food Check -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Quick Food Check</h3>
+            <span
+              class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/nutrition/quick-check</code
+          >
+          <p class="text-gray-400 mb-4">
+            Provides quick health assessment of food from image.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Form Data:</h4>
+            <div class="bg-gray-950 p-4 rounded-lg">
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">image</code>
+                <span class="text-gray-400">Image file (max 10MB)</span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "quick_check": "This is a cheeseburger, approximately 600-700 calories. Moderate protein content but high in saturated fat and sodium.",
+  "timestamp": "2025-01-01T12:00:00Z"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nutrition Info Section -->
+      <div
+        id="nutrition-info"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-info-circle text-blue-400"></i>
+          Nutrition Information Lookup
+        </h2>
+
+        <!-- Get Nutrition Info -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">
+              Search Nutrition Info
+            </h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/nutrition-info?query=chicken</code
+          >
+          <p class="text-gray-400 mb-4">
+            Searches nutrition information using API Ninjas Nutrition API.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg">
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">query</code>
+                <span class="text-gray-400">Food name or description</span>
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>[
+  {
+    "name": "chicken breast",
+    "calories": 165,
+    "serving_size_g": 100,
+    "protein_g": 31,
+    "carbohydrates_total_g": 0,
+    "fat_total_g": 3.6
+  }
+]</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Food Wiki Section -->
+      <div
+        id="food-wiki"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-book text-yellow-400"></i>
+          Food Wiki (USDA FoodData Central)
+        </h2>
+
+        <!-- Search Foods -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Search Foods</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/food-wiki/search?query=apple&pageSize=10</code
+          >
+          <p class="text-gray-400 mb-4">
+            Searches USDA FoodData Central database.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg text-sm">
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">query</code>
+                <span class="text-gray-400">Search term (required)</span>
+              </div>
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">pageSize</code>
+                <span class="text-gray-400"
+                  >Results per page (default: 25, max: 200)</span
+                >
+              </div>
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">pageNumber</code>
+                <span class="text-gray-400">Page number (default: 1)</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">dataType</code>
+                <span class="text-gray-400"
+                  >Foundation, SR Legacy, Survey (optional)</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Food Details -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get Food Details</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/food-wiki/{fdc_id}</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves detailed information for a specific food item.
+          </p>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Multiple Foods -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get Multiple Foods</h3>
+            <span
+              class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/food-wiki/foods</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves details for multiple food items by their FDC IDs.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Request Body:
+            </h4>
+            <pre
+              class="bg-gray-950 text-yellow-300 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "fdcIds": [534358, 747447, 787782]
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recipes Section -->
+      <div
+        id="recipes"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-book-open text-orange-400"></i>
+          Recipes (TheMealDB)
+        </h2>
+
+        <!-- Search Recipes -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Search Recipes</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/recipes/search?query=chicken</code
+          >
+          <p class="text-gray-400 mb-4">Searches recipes by name.</p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg">
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">query</code>
+                <span class="text-gray-400">Recipe name or ingredient</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Random Recipes -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get Random Recipes</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/recipes/random?count=6</code
+          >
+          <p class="text-gray-400 mb-4">Retrieves random recipes.</p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg">
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">count</code>
+                <span class="text-gray-400"
+                  >Number of recipes (default: 1)</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Recipe by ID -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get Recipe by ID</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/recipes/{meal_id}</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves detailed recipe information by ID.
+          </p>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Filter by Category -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Filter by Category</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/recipes/category/{category}</code
+          >
+          <p class="text-gray-400 mb-4">
+            Filters recipes by category (e.g., Seafood, Vegetarian, Dessert).
+          </p>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Filter by Area -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Filter by Area</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/recipes/area/{area}</code
+          >
+          <p class="text-gray-400 mb-4">
+            Filters recipes by cuisine/area (e.g., Italian, Chinese, Mexican).
+          </p>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Section -->
+      <div
+        id="status"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-server text-emerald-400"></i>
+          System Status
+        </h2>
+
+        <!-- Status Check -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">System Status</h3>
+            <span
+              class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/status</code
+          >
+          <p class="text-gray-400 mb-4">
+            Returns backend system status and health check.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "status": "online",
+  "version": "0.3.1",
+  "timestamp": "2025-01-01T12:00:00Z"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-500">
+            <i class="fas fa-lock-open"></i>
+            <span>Public endpoint - No authentication required</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div
+        class="text-center text-gray-500 text-sm py-8 border-t border-gray-800"
+      >
+        <p class="mb-2">Alimentify Backend API Documentation v0.3.1</p>
+        <p>Built with Rust, Axum & MongoDB</p>
+      </div>
+    </div>
+  </body>
+</html>

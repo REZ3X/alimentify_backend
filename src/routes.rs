@@ -33,6 +33,8 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/auth/debug-config", get(handlers::auth::debug_config));
 
     Router::new()
+        .route("/", get(handlers::dashboard::serve_dashboard))
+        .route("/docs", get(handlers::dashboard::serve_docs))
         .route("/status", get(handlers::status::status_check))
         .merge(protected_routes)
         .merge(public_routes)

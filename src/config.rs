@@ -10,6 +10,7 @@ pub struct Config {
     pub brevo: BrevoConfig,
     pub jwt: JwtConfig,
     pub security: SecurityConfig,
+    pub docs: DocsConfig,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -68,6 +69,12 @@ pub struct SecurityConfig {
     pub api_key_enabled: bool,
     pub allowed_origins: Vec<String>,
     pub require_email_verification: bool,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct DocsConfig {
+    pub username: String,
+    pub password: String,
 }
 
 impl Config {
@@ -165,6 +172,14 @@ impl Config {
                     .unwrap_or_else(|_| (if is_production { "true" } else { "false" }).to_string())
                     .parse()
                     .unwrap_or(is_production),
+            },
+            docs: DocsConfig {
+                username: env
+                    ::var("DOCS_USERNAME")
+                    .unwrap_or_else(|_| "admin".to_string()),
+                password: env
+                    ::var("DOCS_PASSWORD")
+                    .unwrap_or_else(|_| "changeme".to_string()),
             },
         };
 
