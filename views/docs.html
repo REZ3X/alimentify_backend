@@ -57,15 +57,44 @@
         <p class="text-gray-300 text-lg mb-4">
           Complete reference for Alimentify Backend API endpoints
         </p>
-        <div class="flex items-center gap-4 text-sm">
+        <div class="flex items-center gap-4 text-sm mb-4">
           <span
             class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30"
-            >Version 0.3.1</span
+            >Version 0.4.0</span
           >
           <span
             class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30"
             >Base URL: http://localhost:4000</span
           >
+          <span
+            class="bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-500/30"
+            >Updated: Dec 2025</span
+          >
+        </div>
+        <div class="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
+          <h3
+            class="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2"
+          >
+            <i class="fas fa-sparkles"></i>What's New in v0.4.0
+          </h3>
+          <ul class="text-sm text-gray-300 space-y-1">
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Advanced Period
+              Statistics API with weekly/monthly/yearly analytics
+            </li>
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Weight goal
+              tracking with progress estimation
+            </li>
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Compliance
+              percentage calculations for nutrition targets
+            </li>
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Daily data
+              aggregation with meal frequency analysis
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -90,9 +119,13 @@
           </a>
           <a
             href="#meals"
-            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-green-500/50 transition-all"
           >
-            <i class="fas fa-utensils text-green-400 mr-2"></i>Meals
+            <i class="fas fa-utensils text-green-400 mr-2"></i>Meals & Analytics
+            <span
+              class="ml-1 text-xs bg-green-500/20 text-green-300 px-2 py-0.5 rounded"
+              >NEW</span
+            >
           </a>
           <a
             href="#nutrition"
@@ -298,7 +331,7 @@ Authorization: Bearer {jwt_token}</pre
         </div>
 
         <!-- Logout -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-semibold text-white">Logout</h3>
             <span
@@ -333,6 +366,47 @@ Authorization: Bearer {jwt_token}</pre
           <div class="flex items-center gap-2 text-sm text-yellow-500">
             <i class="fas fa-lock"></i>
             <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Debug Config (Development Only) -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">
+              Debug Configuration
+            </h3>
+            <div class="flex items-center gap-2">
+              <span
+                class="bg-orange-500/20 text-orange-300 px-2 py-1 rounded text-xs font-semibold"
+                >DEV ONLY</span
+              >
+              <span
+                class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+                >GET</span
+              >
+            </div>
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/auth/debug-config</code
+          >
+          <p class="text-gray-400 mb-4">
+            Returns sanitized OAuth configuration for debugging purposes. Use
+            only in development.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "client_id": "your-client-id",
+  "redirect_uri": "http://localhost:4000/api/auth/google/callback",
+  "frontend_url": "http://localhost:3000"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-orange-500">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Development only - Should be disabled in production</span>
           </div>
         </div>
       </div>
@@ -514,10 +588,15 @@ Authorization: Bearer {jwt_token}</pre
         id="meals"
         class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
           <i class="fas fa-utensils text-green-400"></i>
-          Meal Tracking
+          Meal Tracking & Analytics
         </h2>
+        <p class="text-gray-400 mb-6">
+          Log meals, track daily nutrition, and analyze long-term trends with
+          comprehensive period statistics including goal progress and compliance
+          tracking.
+        </p>
 
         <!-- Log Meal -->
         <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
@@ -692,7 +771,7 @@ Content-Type: application/json</pre
         </div>
 
         <!-- Delete Meal -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-semibold text-white">Delete Meal</h3>
             <span
@@ -713,6 +792,144 @@ Content-Type: application/json</pre
   "success": true,
   "message": "Meal deleted successfully"
 }</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Period Stats (NEW) -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">
+              Get Period Statistics
+            </h3>
+            <div class="flex items-center gap-2">
+              <span
+                class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
+                >NEW</span
+              >
+              <span
+                class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+                >GET</span
+              >
+            </div>
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/meals/period-stats?start_date=2025-01-01&end_date=2025-01-07</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves comprehensive nutrition statistics for a date range with
+            daily breakdowns, averages, totals, and goal progress tracking.
+            Supports weekly, monthly, and yearly analytics.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg text-sm">
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">start_date</code>
+                <span class="text-gray-400"
+                  >Start date in YYYY-MM-DD format (required)</span
+                >
+              </div>
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">end_date</code>
+                <span class="text-gray-400"
+                  >End date in YYYY-MM-DD format (required)</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "period_type": "week",
+  "start_date": "2025-01-01",
+  "end_date": "2025-01-07",
+  "daily_data": [
+    {
+      "date": "2025-01-01",
+      "calories": 2100,
+      "protein_g": 130,
+      "carbs_g": 220,
+      "fat_g": 70,
+      "meal_count": 4
+    }
+  ],
+  "averages": {
+    "avg_calories": 2100,
+    "avg_protein_g": 130,
+    "avg_carbs_g": 220,
+    "avg_fat_g": 70,
+    "avg_meals_per_day": 4
+  },
+  "totals": {
+    "total_calories": 14700,
+    "total_protein_g": 910,
+    "total_carbs_g": 1540,
+    "total_fat_g": 490,
+    "total_meals": 28,
+    "days_logged": 7
+  },
+  "goal_progress": {
+    "target_calories": 2500,
+    "target_protein_g": 140,
+    "target_carbs_g": 281,
+    "target_fat_g": 83,
+    "calories_compliance_percent": 84.0,
+    "protein_compliance_percent": 92.8,
+    "carbs_compliance_percent": 78.2,
+    "fat_compliance_percent": 84.3,
+    "days_on_target": 5,
+    "total_days": 7,
+    "goal_type": "maintain_weight",
+    "estimated_progress": -0.5,
+    "weight_goal": {
+      "starting_weight": 70.0,
+      "goal_type": "maintain_weight"
+    },
+    "current_weight": 70.0,
+    "target_weight": 70.0
+  }
+}</code></pre>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Use Cases:</h4>
+            <div
+              class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300 space-y-2"
+            >
+              <div>
+                <i class="fas fa-chart-line text-green-400 mr-2"></i
+                >Weekly/Monthly/Yearly nutrition trends and analytics
+              </div>
+              <div>
+                <i class="fas fa-bullseye text-blue-400 mr-2"></i>Goal
+                compliance tracking and progress monitoring
+              </div>
+              <div>
+                <i class="fas fa-weight text-purple-400 mr-2"></i>Weight goal
+                progress with estimated completion time
+              </div>
+              <div>
+                <i class="fas fa-calendar-check text-yellow-400 mr-2"></i>Daily
+                logging consistency and meal frequency analysis
+              </div>
+            </div>
           </div>
           <div class="flex items-center gap-2 text-sm text-yellow-500">
             <i class="fas fa-lock"></i>
@@ -1221,7 +1438,7 @@ Content-Type: multipart/form-data</pre
               class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
             ><code>{
   "status": "online",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "timestamp": "2025-01-01T12:00:00Z"
 }</code></pre>
           </div>
@@ -1236,8 +1453,21 @@ Content-Type: multipart/form-data</pre
       <div
         class="text-center text-gray-500 text-sm py-8 border-t border-gray-800"
       >
-        <p class="mb-2">Alimentify Backend API Documentation v0.3.1</p>
-        <p>Built with Rust, Axum & MongoDB</p>
+        <p class="mb-2">Alimentify Backend API Documentation v0.4.0</p>
+        <p class="mb-2">Built with Rust, Axum & MongoDB</p>
+        <div class="flex items-center justify-center gap-4 mt-3 text-xs">
+          <span
+            ><i class="fas fa-code text-purple-400 mr-1"></i>Rust Backend</span
+          >
+          <span
+            ><i class="fas fa-database text-green-400 mr-1"></i>MongoDB</span
+          >
+          <span><i class="fas fa-brain text-cyan-400 mr-1"></i>Gemini AI</span>
+          <span
+            ><i class="fas fa-shield-alt text-yellow-400 mr-1"></i>JWT
+            Auth</span
+          >
+        </div>
       </div>
     </div>
   </body>
