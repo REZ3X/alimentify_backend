@@ -8,6 +8,7 @@ use axum::{
 use chrono::{ DateTime, NaiveDate, Utc, TimeZone };
 use mongodb::bson::{ doc, oid::ObjectId };
 use serde::{ Deserialize, Serialize };
+use futures::TryStreamExt;
 
 use crate::{ db::AppState, error::AppError, models::* };
 
@@ -454,4 +455,331 @@ async fn calculate_daily_totals(
         carbs_remaining: target_carbs - total_carbs,
         fat_remaining: target_fat - total_fat,
     })
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PeriodQuery {
+    pub start_date: String,
+    pub end_date: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PeriodStatsResponse {
+    pub success: bool,
+    pub period_type: String,
+    pub start_date: String,
+    pub end_date: String,
+    pub daily_data: Vec<DailyDataPoint>,
+    pub averages: PeriodAverages,
+    pub totals: PeriodTotals,
+    pub goal_progress: GoalProgress,
+}
+
+#[derive(Debug, Serialize)]
+pub struct DailyDataPoint {
+    pub date: String,
+    pub calories: f64,
+    pub protein_g: f64,
+    pub carbs_g: f64,
+    pub fat_g: f64,
+    pub meal_count: usize,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PeriodAverages {
+    pub avg_calories: f64,
+    pub avg_protein_g: f64,
+    pub avg_carbs_g: f64,
+    pub avg_fat_g: f64,
+    pub avg_meals_per_day: f64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PeriodTotals {
+    pub total_calories: f64,
+    pub total_protein_g: f64,
+    pub total_carbs_g: f64,
+    pub total_fat_g: f64,
+    pub total_meals: usize,
+    pub days_logged: usize,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WeightGoalInfo {
+    pub starting_weight: f64,
+    pub goal_type: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GoalProgress {
+    pub target_calories: f64,
+    pub target_protein_g: f64,
+    pub target_carbs_g: f64,
+    pub target_fat_g: f64,
+    pub calories_compliance_percent: f64,
+    pub protein_compliance_percent: f64,
+    pub carbs_compliance_percent: f64,
+    pub fat_compliance_percent: f64,
+    pub days_on_target: usize,
+    pub total_days: usize,
+    pub goal_type: String,
+    pub estimated_progress: Option<f64>,
+    pub weight_goal: Option<WeightGoalInfo>,
+    pub current_weight: Option<f64>,
+    pub target_weight: Option<f64>,
+}
+
+pub async fn get_period_stats(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+    Query(query): Query<PeriodQuery>
+) -> Result<impl IntoResponse, AppError> {
+    let user_id = ObjectId::parse_str(&claims.sub).map_err(|_|
+        AppError::BadRequest("Invalid user ID".to_string())
+    )?;
+
+    let start_date = NaiveDate
+        ::parse_from_str(&query.start_date, "%Y-%m-%d")
+        .map_err(|_| AppError::BadRequest("Invalid start_date format".to_string()))?;
+
+    let end_date = NaiveDate
+        ::parse_from_str(&query.end_date, "%Y-%m-%d")
+        .map_err(|_| AppError::BadRequest("Invalid end_date format".to_string()))?;
+
+    tracing::info!("Fetching period stats for user {} from {} to {}", claims.sub, start_date, end_date);
+
+    let start_datetime = Utc.from_utc_datetime(&start_date.and_hms_opt(0, 0, 0).unwrap());
+    let end_datetime = Utc.from_utc_datetime(&end_date.and_hms_opt(23, 59, 59).unwrap());
+
+    let start_bson = mongodb::bson::DateTime::from_chrono(start_datetime);
+    let end_bson = mongodb::bson::DateTime::from_chrono(end_datetime);
+
+    let filter = doc! {
+        "user_id": user_id,
+        "date": {
+            "$gte": start_bson,
+            "$lte": end_bson
+        }
+    };
+
+    let mut cursor = state.db
+        .collection::<MealLog>("meal_logs")
+        .find(filter, None).await
+        .map_err(|e| {
+            tracing::error!("Failed to query meals for period: {}", e);
+            AppError::InternalError(e.into())
+        })?;
+
+    let mut all_meals: Vec<MealLog> = Vec::new();
+    while
+        let Some(result) = cursor.try_next().await.map_err(|e| {
+            tracing::error!("Error iterating cursor: {}", e);
+            AppError::InternalError(e.into())
+        })?
+    {
+        all_meals.push(result);
+    }
+
+    if all_meals.is_empty() {
+        tracing::warn!("No meals found in period, trying manual filtering");
+        let all_meals_filter = doc! { "user_id": user_id };
+        let mut all_cursor = state.db
+            .collection::<MealLog>("meal_logs")
+            .find(all_meals_filter, None).await
+            .map_err(|e| AppError::InternalError(e.into()))?;
+
+        while
+            let Some(result) = all_cursor.try_next().await.map_err(|e| {
+                AppError::InternalError(e.into())
+            })?
+        {
+            let meal_date = result.date;
+            if meal_date >= start_datetime && meal_date <= end_datetime {
+                all_meals.push(result);
+            }
+        }
+    }
+
+    tracing::info!("Found {} meals in period", all_meals.len());
+
+    use std::collections::HashMap;
+    let mut daily_map: HashMap<String, Vec<&MealLog>> = HashMap::new();
+
+    for meal in &all_meals {
+        let date_str = meal.date.format("%Y-%m-%d").to_string();
+        daily_map.entry(date_str).or_insert_with(Vec::new).push(meal);
+    }
+
+    let mut daily_data: Vec<DailyDataPoint> = Vec::new();
+    let mut current_date = start_date;
+
+    while current_date <= end_date {
+        let date_str = current_date.format("%Y-%m-%d").to_string();
+        let meals_for_day = daily_map.get(&date_str).cloned().unwrap_or_default();
+
+        let (calories, protein, carbs, fat) = meals_for_day
+            .iter()
+            .fold((0.0, 0.0, 0.0, 0.0), |(c, p, cr, f), meal| {
+                (c + meal.calories, p + meal.protein_g, cr + meal.carbs_g, f + meal.fat_g)
+            });
+
+        daily_data.push(DailyDataPoint {
+            date: date_str,
+            calories,
+            protein_g: protein,
+            carbs_g: carbs,
+            fat_g: fat,
+            meal_count: meals_for_day.len(),
+        });
+
+        current_date = current_date.succ_opt().unwrap();
+    }
+
+    let days_with_meals = daily_data.iter().filter(|d| d.meal_count > 0).count();
+    let total_days = daily_data.len();
+
+    let totals = PeriodTotals {
+        total_calories: daily_data.iter().map(|d| d.calories).sum(),
+        total_protein_g: daily_data.iter().map(|d| d.protein_g).sum(),
+        total_carbs_g: daily_data.iter().map(|d| d.carbs_g).sum(),
+        total_fat_g: daily_data.iter().map(|d| d.fat_g).sum(),
+        total_meals: all_meals.len(),
+        days_logged: days_with_meals,
+    };
+
+    let averages = if days_with_meals > 0 {
+        PeriodAverages {
+            avg_calories: totals.total_calories / (days_with_meals as f64),
+            avg_protein_g: totals.total_protein_g / (days_with_meals as f64),
+            avg_carbs_g: totals.total_carbs_g / (days_with_meals as f64),
+            avg_fat_g: totals.total_fat_g / (days_with_meals as f64),
+            avg_meals_per_day: (totals.total_meals as f64) / (days_with_meals as f64),
+        }
+    } else {
+        PeriodAverages {
+            avg_calories: 0.0,
+            avg_protein_g: 0.0,
+            avg_carbs_g: 0.0,
+            avg_fat_g: 0.0,
+            avg_meals_per_day: 0.0,
+        }
+    };
+
+    let user = state.db
+        .collection::<User>("users")
+        .find_one(doc! { "_id": user_id }, None).await
+        .map_err(|e| AppError::InternalError(e.into()))?
+        .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
+
+    let (target_calories, target_protein, target_carbs, target_fat, goal_type, estimated_progress, weight_goal, current_weight, target_weight) = if
+        let Some(profile) = user.health_profile
+    {
+        let goal = match profile.goal {
+            crate::models::HealthGoal::LoseWeight => "lose_weight".to_string(),
+            crate::models::HealthGoal::MaintainWeight => "maintain_weight".to_string(),
+            crate::models::HealthGoal::GainWeight => "gain_weight".to_string(),
+            crate::models::HealthGoal::BuildMuscle => "build_muscle".to_string(),
+        };
+        
+        let estimated = if days_with_meals > 7 {
+            let avg_cal_diff = averages.avg_calories - profile.daily_calories;
+            let days_elapsed = days_with_meals as f64;
+            let calories_per_kg = 7700.0;
+            let estimated_weight_change = (avg_cal_diff * days_elapsed) / calories_per_kg;
+            Some(estimated_weight_change)
+        } else {
+            None
+        };
+
+        let weight_goal_data = Some(WeightGoalInfo {
+            starting_weight: profile.weight_kg,
+            goal_type: goal.clone(),
+        });
+
+        let current_wt = Some(profile.weight_kg);
+        
+        let target_wt = match profile.goal {
+            crate::models::HealthGoal::LoseWeight => Some(profile.weight_kg * 0.9), 
+            crate::models::HealthGoal::GainWeight => Some(profile.weight_kg * 1.1), 
+            crate::models::HealthGoal::BuildMuscle => Some(profile.weight_kg * 1.05), 
+            crate::models::HealthGoal::MaintainWeight => Some(profile.weight_kg),
+        };
+
+        (
+            profile.daily_calories,
+            profile.daily_protein_g,
+            profile.daily_carbs_g,
+            profile.daily_fat_g,
+            goal,
+            estimated,
+            weight_goal_data,
+            current_wt,
+            target_wt,
+        )
+    } else {
+        (2000.0, 150.0, 250.0, 67.0, "maintain_weight".to_string(), None, None, None, None)
+    };
+
+    let days_on_target = daily_data
+        .iter()
+        .filter(|d| {
+            let cal_diff = (d.calories - target_calories).abs();
+            cal_diff / target_calories <= 0.1 && d.meal_count > 0
+        })
+        .count();
+
+    let goal_progress = GoalProgress {
+        target_calories,
+        target_protein_g: target_protein,
+        target_carbs_g: target_carbs,
+        target_fat_g: target_fat,
+        calories_compliance_percent: if days_with_meals > 0 {
+            ((days_on_target as f64) / (days_with_meals as f64)) * 100.0
+        } else {
+            0.0
+        },
+        protein_compliance_percent: if days_with_meals > 0 && target_protein > 0.0 {
+            (averages.avg_protein_g / target_protein) * 100.0
+        } else {
+            0.0
+        },
+        carbs_compliance_percent: if days_with_meals > 0 && target_carbs > 0.0 {
+            (averages.avg_carbs_g / target_carbs) * 100.0
+        } else {
+            0.0
+        },
+        fat_compliance_percent: if days_with_meals > 0 && target_fat > 0.0 {
+            (averages.avg_fat_g / target_fat) * 100.0
+        } else {
+            0.0
+        },
+        days_on_target,
+        total_days: days_with_meals,
+        goal_type,
+        estimated_progress,
+        weight_goal,
+        current_weight,
+        target_weight,
+    };
+
+    let period_type = if total_days <= 7 {
+        "week".to_string()
+    } else if total_days <= 31 {
+        "month".to_string()
+    } else {
+        "year".to_string()
+    };
+
+    Ok(
+        Json(PeriodStatsResponse {
+            success: true,
+            period_type,
+            start_date: query.start_date,
+            end_date: query.end_date,
+            daily_data,
+            averages,
+            totals,
+            goal_progress,
+        })
+    )
 }

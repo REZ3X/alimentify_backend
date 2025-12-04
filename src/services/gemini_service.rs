@@ -114,11 +114,11 @@ Be as accurate as possible based on visual analysis. If you cannot clearly ident
         };
 
         let url = format!(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={}",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key={}",
             self.api_key
         );
 
-        tracing::info!("Sending request to Gemini API for food analysis");
+        tracing::info!("Sending request to Gemini 3 Pro Preview API for food analysis");
 
         let response = self.client.post(&url).json(&request_body).send().await?;
 
@@ -165,7 +165,7 @@ Be as accurate as possible based on visual analysis. If you cannot clearly ident
         };
 
         let url = format!(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={}",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key={}",
             self.api_key
         );
 
@@ -198,7 +198,7 @@ Be as accurate as possible based on visual analysis. If you cannot clearly ident
         };
 
         let url = format!(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={}",
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key={}",
             self.api_key
         );
 
