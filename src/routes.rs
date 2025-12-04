@@ -22,6 +22,7 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/health/profile", get(handlers::health::get_profile))
         .route("/api/meals/log", post(handlers::meals::log_meal))
         .route("/api/meals/daily", get(handlers::meals::get_daily_meals))
+        .route("/api/meals/period-stats", get(handlers::meals::get_period_stats))
         .route("/api/meals/:id", put(handlers::meals::update_meal))
         .route("/api/meals/:id", delete(handlers::meals::delete_meal))
         .route_layer(middleware::from_fn_with_state(state.clone(), mw::auth::auth_middleware));
