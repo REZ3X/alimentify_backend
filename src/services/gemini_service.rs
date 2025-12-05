@@ -6,6 +6,19 @@ use std::sync::Arc;
 #[derive(Debug, Serialize)]
 struct GeminiRequest {
     contents: Vec<Content>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    generation_config: Option<GenerationConfig>,
+}
+
+#[derive(Debug, Serialize)]
+struct GenerationConfig {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    thinking_config: Option<ThinkingConfig>,
+}
+
+#[derive(Debug, Serialize)]
+struct ThinkingConfig {
+    thinking_level: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -111,6 +124,11 @@ Be as accurate as possible based on visual analysis. If you cannot clearly ident
                     }
                 ],
             }],
+            generation_config: Some(GenerationConfig {
+                thinking_config: Some(ThinkingConfig {
+                    thinking_level: "low".to_string(),
+                }),
+            }),
         };
 
         let url = format!(
@@ -162,6 +180,11 @@ Be as accurate as possible based on visual analysis. If you cannot clearly ident
                     }
                 ],
             }],
+            generation_config: Some(GenerationConfig {
+                thinking_config: Some(ThinkingConfig {
+                    thinking_level: "low".to_string(),
+                }),
+            }),
         };
 
         let url = format!(
@@ -195,6 +218,11 @@ Be as accurate as possible based on visual analysis. If you cannot clearly ident
                     text: prompt.to_string(),
                 }],
             }],
+            generation_config: Some(GenerationConfig {
+                thinking_config: Some(ThinkingConfig {
+                    thinking_level: "low".to_string(),
+                }),
+            }),
         };
 
         let url = format!(
