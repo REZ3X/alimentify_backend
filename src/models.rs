@@ -76,6 +76,19 @@ mod bson_datetime {
     }
 }
 
+fn serialize_object_id_as_string<S>(
+    id: &Option<mongodb::bson::oid::ObjectId>,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    match id {
+        Some(oid) => serializer.serialize_str(&oid.to_hex()),
+        None => serializer.serialize_none(),
+    }
+}
+
 mod bson_datetime_option {
     use chrono::{DateTime, Utc, TimeZone};
     use serde::{self, Deserialize, Deserializer, Serializer};
@@ -470,4 +483,58 @@ impl HealthProfile {
             }
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum ReportPeriod {
+    Daily,
+    Weekly,
+    Monthly,
+    Yearly,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum ReportStatus {
+    Generated,
+    Sent,
+    Failed,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct MealReport {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none", serialize_with = "serialize_object_id_as_string")]
+    pub id: Option<ObjectId>,
+    pub user_id: ObjectId,
+    pub report_type: ReportPeriod,
+    pub start_date: String,
+    pub end_date: String,
+    pub generated_at: DateTime<Utc>,
+    pub status: ReportStatus,
+    
+    pub total_days: usize,
+    pub days_logged: usize,
+    pub total_meals: usize,
+    pub avg_calories: f64,
+    pub avg_protein_g: f64,
+    pub avg_carbs_g: f64,
+    pub avg_fat_g: f64,
+    
+    pub goal_type: String,
+    pub goal_achieved: bool,
+    pub calories_compliance_percent: f64,
+    pub protein_compliance_percent: f64,
+    pub carbs_compliance_percent: f64,
+    pub fat_compliance_percent: f64,
+    pub days_on_target: usize,
+
+    pub starting_weight: Option<f64>,
+    pub ending_weight: Option<f64>,
+    pub weight_change: Option<f64>,
+    pub target_weight: Option<f64>,
+    pub weight_goal_achieved: Option<bool>,
+
+    pub best_day_date: Option<String>,
+    pub best_day_compliance: Option<f64>,
+    pub streak_days: usize,
+    pub notes: Option<String>,
 }

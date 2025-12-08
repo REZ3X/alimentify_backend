@@ -25,6 +25,10 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/meals/period-stats", get(handlers::meals::get_period_stats))
         .route("/api/meals/:id", put(handlers::meals::update_meal))
         .route("/api/meals/:id", delete(handlers::meals::delete_meal))
+        .route("/api/reports/generate", post(handlers::reports::generate_report))
+        .route("/api/reports", get(handlers::reports::get_user_reports))
+        .route("/api/reports/:id", get(handlers::reports::get_report_by_id))
+        .route("/api/reports/:id", delete(handlers::reports::delete_report))
         .route_layer(middleware::from_fn_with_state(state.clone(), mw::auth::auth_middleware));
 
     let public_routes = Router::new()

@@ -60,7 +60,7 @@
         <div class="flex items-center gap-4 text-sm mb-4">
           <span
             class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30"
-            >Version 0.4.0</span
+            >Version 0.5.0</span
           >
           <span
             class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30"
@@ -75,24 +75,32 @@
           <h3
             class="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2"
           >
-            <i class="fas fa-sparkles"></i>What's New in v0.4.0
+            <i class="fas fa-sparkles"></i>What's New in v0.5.0
           </h3>
           <ul class="text-sm text-gray-300 space-y-1">
             <li>
-              <i class="fas fa-check text-green-500 mr-2"></i>Advanced Period
-              Statistics API with weekly/monthly/yearly analytics
+              <i class="fas fa-check text-green-500 mr-2"></i>Meal Reports with
+              comprehensive nutrition analytics and goal achievement status
             </li>
             <li>
-              <i class="fas fa-check text-green-500 mr-2"></i>Weight goal
-              tracking with progress estimation
+              <i class="fas fa-check text-green-500 mr-2"></i>Email delivery of
+              nutrition reports with HTML formatting
+            </li>
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Report management
+              (generate, view, delete)
             </li>
             <li>
               <i class="fas fa-check text-green-500 mr-2"></i>Compliance
-              percentage calculations for nutrition targets
+              tracking with best day analysis and logging streaks
             </li>
             <li>
-              <i class="fas fa-check text-green-500 mr-2"></i>Daily data
-              aggregation with meal frequency analysis
+              <i class="fas fa-check text-gray-400 mr-2"></i>Advanced Period
+              Statistics API with weekly/monthly/yearly analytics
+            </li>
+            <li>
+              <i class="fas fa-check text-gray-400 mr-2"></i>Weight goal
+              tracking with progress estimation
             </li>
           </ul>
         </div>
@@ -150,6 +158,16 @@
             class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
           >
             <i class="fas fa-book-open text-orange-400 mr-2"></i>Recipes
+          </a>
+          <a
+            href="#reports"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-blue-500/50 transition-all"
+          >
+            <i class="fas fa-file-alt text-blue-400 mr-2"></i>Reports
+            <span
+              class="ml-1 text-xs bg-green-500/20 text-green-300 px-2 py-0.5 rounded"
+              >NEW</span
+            >
           </a>
           <a
             href="#status"
@@ -938,6 +956,341 @@ Authorization: Bearer {jwt_token}</pre
         </div>
       </div>
 
+      <!-- Reports Section -->
+      <div
+        id="reports"
+        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+      >
+        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <i class="fas fa-file-alt text-blue-400"></i>
+          Meal Reports
+        </h2>
+
+        <!-- Generate Report -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Generate Report</h3>
+            <div class="flex items-center gap-2">
+              <span
+                class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
+                >NEW</span
+              >
+              <span
+                class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
+                >POST</span
+              >
+            </div>
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/reports/generate?report_type=weekly&start_date=2025-01-01&end_date=2025-01-07&send_email=true</code
+          >
+          <p class="text-gray-400 mb-4">
+            Generates a comprehensive nutrition report for a specific period
+            with goal achievement analysis, compliance metrics, and optional
+            email delivery.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters:
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg text-sm">
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">report_type</code>
+                <span class="text-gray-400"
+                  >Type: "daily", "weekly", "monthly", or "yearly"
+                  (required)</span
+                >
+              </div>
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">start_date</code>
+                <span class="text-gray-400"
+                  >Start date in YYYY-MM-DD format (required)</span
+                >
+              </div>
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">end_date</code>
+                <span class="text-gray-400"
+                  >End date in YYYY-MM-DD format (required)</span
+                >
+              </div>
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">send_email</code>
+                <span class="text-gray-400"
+                  >Send report via email (optional, default: false)</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "report": {
+    "_id": "507f1f77bcf86cd799439011",
+    "user_id": "507f191e810c19729de860ea",
+    "report_type": "Weekly",
+    "start_date": "2025-01-01",
+    "end_date": "2025-01-07",
+    "generated_at": "2025-01-08T10:00:00Z",
+    "status": "Sent",
+    "total_days": 7,
+    "days_logged": 6,
+    "total_meals": 22,
+    "avg_calories": 2150.5,
+    "avg_protein_g": 135.2,
+    "avg_carbs_g": 225.8,
+    "avg_fat_g": 72.3,
+    "goal_type": "lose_weight",
+    "goal_achieved": true,
+    "calories_compliance_percent": 86.5,
+    "protein_compliance_percent": 95.2,
+    "carbs_compliance_percent": 82.1,
+    "fat_compliance_percent": 88.7,
+    "days_on_target": 5,
+    "starting_weight": 72.0,
+    "ending_weight": 71.3,
+    "weight_change": -0.7,
+    "target_weight": 70.0,
+    "weight_goal_achieved": false,
+    "best_day_date": "2025-01-05",
+    "best_day_compliance": 96.4,
+    "streak_days": 4,
+    "notes": null
+  },
+  "message": "Report generated and sent to your email"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get User Reports -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get User Reports</h3>
+            <div class="flex items-center gap-2">
+              <span
+                class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
+                >NEW</span
+              >
+              <span
+                class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+                >GET</span
+              >
+            </div>
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/reports?limit=10&skip=0</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves a list of all reports generated by the authenticated user,
+            sorted by generation date (newest first).
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Query Parameters (Optional):
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg text-sm">
+              <div class="flex items-start gap-3 mb-2">
+                <code class="text-purple-300 code-font">limit</code>
+                <span class="text-gray-400"
+                  >Number of reports to return (default: 50)</span
+                >
+              </div>
+              <div class="flex items-start gap-3">
+                <code class="text-purple-300 code-font">skip</code>
+                <span class="text-gray-400"
+                  >Number of reports to skip for pagination (default: 0)</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "reports": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "user_id": "507f191e810c19729de860ea",
+      "report_type": "Weekly",
+      "start_date": "2025-01-01",
+      "end_date": "2025-01-07",
+      "generated_at": "2025-01-08T10:00:00Z",
+      "status": "Sent",
+      "total_days": 7,
+      "days_logged": 6,
+      "total_meals": 22,
+      "avg_calories": 2150.5,
+      "avg_protein_g": 135.2,
+      "avg_carbs_g": 225.8,
+      "avg_fat_g": 72.3,
+      "goal_type": "lose_weight",
+      "goal_achieved": true,
+      "calories_compliance_percent": 86.5,
+      "protein_compliance_percent": 95.2,
+      "carbs_compliance_percent": 82.1,
+      "fat_compliance_percent": 88.7,
+      "days_on_target": 5,
+      "streak_days": 4
+    }
+  ],
+  "total": 1
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Report by ID -->
+        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Get Report by ID</h3>
+            <div class="flex items-center gap-2">
+              <span
+                class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
+                >NEW</span
+              >
+              <span
+                class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
+                >GET</span
+              >
+            </div>
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/reports/:id</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves detailed information for a specific report by ID.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "report": {
+    "_id": "507f1f77bcf86cd799439011",
+    "user_id": "507f191e810c19729de860ea",
+    "report_type": "Weekly",
+    "start_date": "2025-01-01",
+    "end_date": "2025-01-07",
+    "generated_at": "2025-01-08T10:00:00Z",
+    "status": "Sent",
+    "total_days": 7,
+    "days_logged": 6,
+    "total_meals": 22,
+    "avg_calories": 2150.5,
+    "avg_protein_g": 135.2,
+    "avg_carbs_g": 225.8,
+    "avg_fat_g": 72.3,
+    "goal_type": "lose_weight",
+    "goal_achieved": true,
+    "calories_compliance_percent": 86.5,
+    "protein_compliance_percent": 95.2,
+    "carbs_compliance_percent": 82.1,
+    "fat_compliance_percent": 88.7,
+    "days_on_target": 5,
+    "starting_weight": 72.0,
+    "ending_weight": 71.3,
+    "weight_change": -0.7,
+    "target_weight": 70.0,
+    "weight_goal_achieved": false,
+    "best_day_date": "2025-01-05",
+    "best_day_compliance": 96.4,
+    "streak_days": 4,
+    "notes": null
+  },
+  "message": "Report retrieved successfully"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Delete Report -->
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white">Delete Report</h3>
+            <div class="flex items-center gap-2">
+              <span
+                class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
+                >NEW</span
+              >
+              <span
+                class="bg-red-500/20 text-red-300 px-3 py-1 rounded text-sm font-semibold code-font"
+                >DELETE</span
+              >
+            </div>
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/reports/:id</code
+          >
+          <p class="text-gray-400 mb-4">
+            Deletes a specific report. Only the report owner can delete it.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "message": "Report deleted successfully"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+      </div>
+
       <!-- AI Nutrition Section -->
       <div
         id="nutrition"
@@ -1438,7 +1791,7 @@ Content-Type: multipart/form-data</pre
               class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
             ><code>{
   "status": "online",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "timestamp": "2025-01-01T12:00:00Z"
 }</code></pre>
           </div>
@@ -1453,7 +1806,7 @@ Content-Type: multipart/form-data</pre
       <div
         class="text-center text-gray-500 text-sm py-8 border-t border-gray-800"
       >
-        <p class="mb-2">Alimentify Backend API Documentation v0.4.0</p>
+        <p class="mb-2">Alimentify Backend API Documentation v0.5.0</p>
         <p class="mb-2">Built with Rust, Axum & MongoDB</p>
         <div class="flex items-center justify-center gap-4 mt-3 text-xs">
           <span

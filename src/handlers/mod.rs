@@ -7,3 +7,4 @@ pub mod nutrition_info;
 pub mod recipes;
 pub mod health;
 pub mod meals;
+pub mod reports;
