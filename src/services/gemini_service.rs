@@ -81,9 +81,36 @@ impl GeminiService {
         let base64_image = general_purpose::STANDARD.encode(image_data);
 
         let prompt =
-            r#"Analyze this food image and provide detailed nutritional information in the following JSON format:
+            r#"Analyze this image for food content. Follow these steps:
+
+STEP 1 - VALIDATION:
+First, determine if the image contains actual human-edible food. 
+- If the image shows non-food items (objects, animals, people, text, memes, inappropriate content, etc.), respond ONLY with this JSON:
+{
+  "is_valid_food": false,
+  "error_type": "not_food",
+  "message": "This image does not appear to contain food. Please upload a clear photo of a meal or food item."
+}
+
+- If the image shows something that is NOT typically consumed by humans (pet food, raw inedible items, toxic substances, etc.), respond ONLY with this JSON:
+{
+  "is_valid_food": false,
+  "error_type": "not_edible",
+  "message": "This item is not typically consumed as human food. Please upload a photo of an edible meal or food item."
+}
+
+- If the image is inappropriate, offensive, or contains sensitive content, respond ONLY with this JSON:
+{
+  "is_valid_food": false,
+  "error_type": "inappropriate",
+  "message": "This image cannot be processed. Please upload an appropriate photo of food."
+}
+
+STEP 2 - ANALYSIS (only if validation passes):
+If the image contains valid, human-edible food, provide detailed nutritional information in this JSON format:
 
 {
+  "is_valid_food": true,
   "food_name": "name of the food item",
   "serving_size": "typical serving size",
   "calories": "estimated calories per serving",
@@ -108,7 +135,7 @@ impl GeminiService {
   "recommendations": "suggestions for healthier alternatives or complementary foods"
 }
 
-Be as accurate as possible based on visual analysis. If you cannot clearly identify the food, indicate uncertainty in your response."#;
+Be accurate based on visual analysis. If you cannot clearly identify the food, indicate uncertainty in your response but still provide estimates if it appears to be food."#;
 
         let request_body = GeminiRequest {
             contents: vec![Content {
@@ -253,13 +280,43 @@ Be as accurate as possible based on visual analysis. If you cannot clearly ident
         &self,
         food_description: &str
     ) -> Result<serde_json::Value> {
+        let inappropriate_keywords = [
+            "human", "person", "people", "body", "flesh", "blood", "organ",
+            "cannibal", "corpse", "dead", "kill", "murder", "poison",
+            "toxic", "dangerous", "harmful", "drug", "narcotic",
+            "feces", "urine", "waste", "dirt", "sand", "rock", "metal",
+            "plastic", "glass", "wood", "paper", "rubber", "chemical"
+        ];
+        
+        let description_lower = food_description.to_lowercase();
+
+        for keyword in &inappropriate_keywords {
+            if description_lower.contains(keyword) {
+                return Ok(serde_json::json!({
+                    "is_valid_food": false,
+                    "error_type": "inappropriate",
+                    "message": "This doesn't appear to be a valid food item. Please enter an actual food or meal."
+                }));
+            }
+        }
+        
         let prompt =
             format!(r#"Analyze the following food description and provide detailed nutrition information.
 
 Food Description: {}
 
-Provide the response ONLY as a valid JSON object with this exact structure (no additional text):
+IMPORTANT: First, determine if this is a valid, human-edible food item.
+
+If the description is NOT a valid food (e.g., non-food objects, inappropriate content, inedible items, or anything that shouldn't be consumed), respond ONLY with this JSON:
 {{
+    "is_valid_food": false,
+    "error_type": "not_food",
+    "message": "This doesn't appear to be a valid food item. Please enter an actual food or meal."
+}}
+
+If it IS a valid food, provide the response as a valid JSON object with this exact structure:
+{{
+    "is_valid_food": true,
     "food_name": "the food name",
     "calories": <number>,
     "protein_g": <number>,
@@ -279,6 +336,25 @@ Guidelines:
 Return ONLY the JSON object, nothing else."#, food_description);
 
         let response_text = self.get_text_response(&prompt).await?;
+        
+        let response_lower = response_text.to_lowercase();
+        let safety_indicators = [
+            "cannot fulfill", "i cannot", "i'm not able", "i am not able",
+            "safety guidelines", "prohibited", "harmful", "violence",
+            "self-harm", "cannibalism", "inappropriate", "i'm sorry",
+            "i apologize", "not appropriate", "refuse to"
+        ];
+        
+        for indicator in &safety_indicators {
+            if response_lower.contains(indicator) {
+                tracing::info!("Detected safety response from Gemini, returning user-friendly message");
+                return Ok(serde_json::json!({
+                    "is_valid_food": false,
+                    "error_type": "inappropriate",
+                    "message": "This doesn't appear to be a valid food item. Please enter an actual food or meal."
+                }));
+            }
+        }
 
         let json_str = if let Some(start) = response_text.find('{') {
             if let Some(end) = response_text.rfind('}') {
@@ -287,18 +363,24 @@ Return ONLY the JSON object, nothing else."#, food_description);
                 &response_text
             }
         } else {
-            &response_text
+            tracing::info!("No JSON found in response, treating as invalid food");
+            return Ok(serde_json::json!({
+                "is_valid_food": false,
+                "error_type": "parse_error",
+                "message": "Could not analyze this item. Please try a different food description."
+            }));
         };
 
         let nutrition_data: serde_json::Value = serde_json
             ::from_str(json_str)
-            .map_err(|e|
+            .map_err(|e| {
+                tracing::warn!("Failed to parse JSON: {}. Response was: {}", e, response_text);
                 anyhow::anyhow!(
                     "Failed to parse AI response as JSON: {}. Response was: {}",
                     e,
                     response_text
                 )
-            )?;
+            })?;
 
         Ok(nutrition_data)
     }
