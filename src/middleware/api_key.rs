@@ -8,6 +8,8 @@ use serde_json::json;
 
 use crate::db::AppState;
 
+const PUBLIC_PATHS: &[&str] = &["/", "/docs", "/status"];
+
 pub async fn api_key_middleware(
     State(state): State<AppState>,
     headers: HeaderMap,
@@ -15,6 +17,11 @@ pub async fn api_key_middleware(
     next: Next
 ) -> Result<Response, Response> {
     if !state.config.security.api_key_enabled {
+        return Ok(next.run(request).await);
+    }
+
+    let path = request.uri().path();
+    if PUBLIC_PATHS.contains(&path) {
         return Ok(next.run(request).await);
     }
 
