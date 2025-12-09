@@ -19,25 +19,40 @@
       body {
         font-family: "Inter", sans-serif;
       }
+      /* Mobile scrolling improvements */
+      @media (max-width: 640px) {
+        .container {
+          padding-left: 1rem;
+          padding-right: 1rem;
+        }
+      }
+      /* Prevent horizontal overflow */
+      * {
+        max-width: 100%;
+      }
     </style>
   </head>
-  <body class="bg-gray-950 text-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+  <body class="bg-gray-950 text-gray-100 min-h-screen overflow-x-hidden">
+    <div class="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
       <!-- Header -->
       <div
-        class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 mb-6 border border-gray-800 shadow-2xl"
+        class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-8 mb-6 border border-gray-800 shadow-2xl"
       >
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-4xl font-bold text-white mb-2">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
+          <div class="text-center sm:text-left">
+            <h1 class="text-2xl sm:text-4xl font-bold text-white mb-2">
               Alimentify Backend
             </h1>
-            <p class="text-gray-400 text-lg">System Monitoring Dashboard</p>
+            <p class="text-gray-400 text-base sm:text-lg">
+              System Monitoring Dashboard
+            </p>
           </div>
-          <div class="flex items-center gap-4">
+          <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
             <a
               href="/docs"
-              class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+              class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
             >
               <i class="fas fa-book"></i>
               API Documentation
@@ -48,7 +63,9 @@
               <div
                 class="w-3 h-3 bg-green-500 rounded-full animate-pulse"
               ></div>
-              <span class="text-green-400 font-semibold">System Online</span>
+              <span class="text-green-400 font-semibold text-sm sm:text-base"
+                >System Online</span
+              >
             </div>
           </div>
         </div>
@@ -451,7 +468,7 @@
 
       <!-- Footer -->
       <div class="text-center text-gray-500 text-sm py-6">
-        <p>Alimentify Backend API v0.5.5</p>
+        <p>Alimentify Backend API v0.5.7</p>
         <p class="mt-1">Built with Rust, Axum & MongoDB</p>
       </div>
     </div>

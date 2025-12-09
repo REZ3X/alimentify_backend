@@ -25,45 +25,81 @@
       pre {
         font-family: "JetBrains Mono", monospace;
       }
+      /* Mobile responsiveness */
+      @media (max-width: 640px) {
+        .endpoint-header {
+          flex-direction: column;
+          align-items: flex-start !important;
+          gap: 0.5rem;
+        }
+        pre,
+        code {
+          font-size: 0.75rem;
+          word-break: break-all;
+        }
+        .container {
+          padding-left: 0.75rem;
+          padding-right: 0.75rem;
+        }
+      }
+      /* Prevent horizontal overflow */
+      * {
+        max-width: 100%;
+      }
+      pre {
+        max-width: 100%;
+        overflow-x: auto;
+      }
     </style>
   </head>
-  <body class="bg-gray-950 text-gray-100">
+  <body class="bg-gray-950 text-gray-100 overflow-x-hidden">
     <!-- Navigation -->
     <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
       <div class="container mx-auto px-4 py-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+        >
+          <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
             <a
               href="/"
-              class="text-2xl font-bold text-white hover:text-purple-400 transition-colors"
+              class="text-xl sm:text-2xl font-bold text-white hover:text-purple-400 transition-colors"
               >Alimentify API</a
             >
-            <span class="text-gray-500">/</span>
-            <span class="text-gray-400">Documentation</span>
+            <span class="text-gray-500 hidden sm:inline">/</span>
+            <span class="text-gray-400 text-sm sm:text-base"
+              >Documentation</span
+            >
           </div>
-          <a href="/" class="text-gray-400 hover:text-white transition-colors">
+          <a
+            href="/"
+            class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base"
+          >
             <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
           </a>
         </div>
       </div>
     </nav>
 
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
       <!-- Header -->
       <div
-        class="bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-2xl p-8 mb-8 border border-purple-800/50"
+        class="bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 border border-purple-800/50"
       >
-        <h1 class="text-4xl font-bold text-white mb-3">API Documentation</h1>
-        <p class="text-gray-300 text-lg mb-4">
+        <h1 class="text-2xl sm:text-4xl font-bold text-white mb-3">
+          API Documentation
+        </h1>
+        <p class="text-gray-300 text-base sm:text-lg mb-4">
           Complete reference for Alimentify Backend API endpoints
         </p>
-        <div class="flex items-center gap-4 text-sm mb-4">
+        <div
+          class="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm mb-4"
+        >
           <span
             class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30"
-            >Version 0.5.5</span
+            >Version 0.5.7</span
           >
           <span
-            class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30"
+            class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30 break-all"
             >Base URL: http://localhost:4000</span
           >
           <span
@@ -75,7 +111,7 @@
           <h3
             class="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2"
           >
-            <i class="fas fa-sparkles"></i>What's New in v0.5.5
+            <i class="fas fa-sparkles"></i>What's New in v0.5.7
           </h3>
           <ul class="text-sm text-gray-300 space-y-1">
             <li>
@@ -107,27 +143,33 @@
       </div>
 
       <!-- Quick Navigation -->
-      <div class="bg-gray-900 rounded-2xl p-6 mb-8 border border-gray-800">
-        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+      <div
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gray-800"
+      >
+        <h2
+          class="text-lg sm:text-xl font-bold text-white mb-4 flex items-center gap-2"
+        >
           <i class="fas fa-compass text-purple-400"></i>
           Quick Navigation
         </h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3"
+        >
           <a
             href="#auth"
-            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all text-sm sm:text-base"
           >
             <i class="fas fa-shield-alt text-purple-400 mr-2"></i>Authentication
           </a>
           <a
             href="#health"
-            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all text-sm sm:text-base"
           >
             <i class="fas fa-heart-pulse text-red-400 mr-2"></i>Health Profile
           </a>
           <a
             href="#meals"
-            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-green-500/50 transition-all"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-green-500/50 transition-all text-sm sm:text-base"
           >
             <i class="fas fa-utensils text-green-400 mr-2"></i>Meals & Analytics
             <span
@@ -137,13 +179,13 @@
           </a>
           <a
             href="#nutrition"
-            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all text-sm sm:text-base"
           >
             <i class="fas fa-brain text-cyan-400 mr-2"></i>AI Nutrition
           </a>
           <a
             href="#nutrition-info"
-            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all text-sm sm:text-base"
           >
             <i class="fas fa-info-circle text-blue-400 mr-2"></i>Nutrition Info
           </a>
@@ -181,17 +223,21 @@
       <!-- Authentication Section -->
       <div
         id="auth"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
           <i class="fas fa-shield-alt text-purple-400"></i>
           Authentication
         </h2>
 
         <!-- Google Auth URL -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
               Get Google Auth URL
             </h3>
             <span
@@ -221,9 +267,11 @@
         </div>
 
         <!-- Google Callback -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
               Google OAuth Callback
             </h3>
             <span
@@ -264,9 +312,13 @@ Redirect to: {FRONTEND_URL}/?token={jwt_token}</code></pre>
         </div>
 
         <!-- Verify Email -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Verify Email</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Verify Email
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -308,9 +360,13 @@ Redirect to: {FRONTEND_URL}/?token={jwt_token}</code></pre>
         </div>
 
         <!-- Get Current User -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get Current User</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Current User
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -349,9 +405,11 @@ Authorization: Bearer {jwt_token}</pre
         </div>
 
         <!-- Logout -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Logout</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">Logout</h3>
             <span
               class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >POST</span
@@ -388,9 +446,11 @@ Authorization: Bearer {jwt_token}</pre
         </div>
 
         <!-- Debug Config (Development Only) -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
               Debug Configuration
             </h3>
             <div class="flex items-center gap-2">
@@ -432,17 +492,21 @@ Authorization: Bearer {jwt_token}</pre
       <!-- Health Profile Section -->
       <div
         id="health"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
           <i class="fas fa-heart-pulse text-red-400"></i>
           Health Profile
         </h2>
 
         <!-- Create/Update Profile -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
               Create or Update Profile
             </h3>
             <span
@@ -553,9 +617,13 @@ Content-Type: application/json</pre
         </div>
 
         <!-- Get Profile -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get Health Profile</h3>
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Health Profile
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -604,7 +672,7 @@ Authorization: Bearer {jwt_token}</pre
       <!-- Meals Section -->
       <div
         id="meals"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
         <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
           <i class="fas fa-utensils text-green-400"></i>
@@ -617,9 +685,13 @@ Authorization: Bearer {jwt_token}</pre
         </p>
 
         <!-- Log Meal -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Log Meal</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Log Meal
+            </h3>
             <span
               class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >POST</span
@@ -697,9 +769,13 @@ Content-Type: application/json</pre
         </div>
 
         <!-- Get Daily Meals -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get Daily Meals</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Daily Meals
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -755,9 +831,13 @@ Content-Type: application/json</pre
         </div>
 
         <!-- Update Meal -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Update Meal</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Update Meal
+            </h3>
             <span
               class="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >PUT</span
@@ -789,9 +869,13 @@ Content-Type: application/json</pre
         </div>
 
         <!-- Delete Meal -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Delete Meal</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Delete Meal
+            </h3>
             <span
               class="bg-red-500/20 text-red-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >DELETE</span
@@ -818,9 +902,11 @@ Content-Type: application/json</pre
         </div>
 
         <!-- Get Period Stats (NEW) -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
               Get Period Statistics
             </h3>
             <div class="flex items-center gap-2">
@@ -959,17 +1045,23 @@ Authorization: Bearer {jwt_token}</pre
       <!-- Reports Section -->
       <div
         id="reports"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
           <i class="fas fa-file-alt text-blue-400"></i>
           Meal Reports
         </h2>
 
         <!-- Generate Report -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Generate Report</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Generate Report
+            </h3>
             <div class="flex items-center gap-2">
               <span
                 class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
@@ -1078,9 +1170,13 @@ Authorization: Bearer {jwt_token}</pre
         </div>
 
         <!-- Get User Reports -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get User Reports</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get User Reports
+            </h3>
             <div class="flex items-center gap-2">
               <span
                 class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
@@ -1169,9 +1265,13 @@ Authorization: Bearer {jwt_token}</pre
         </div>
 
         <!-- Get Report by ID -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get Report by ID</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Report by ID
+            </h3>
             <div class="flex items-center gap-2">
               <span
                 class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
@@ -1246,9 +1346,13 @@ Authorization: Bearer {jwt_token}</pre
         </div>
 
         <!-- Delete Report -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Delete Report</h3>
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Delete Report
+            </h3>
             <div class="flex items-center gap-2">
               <span
                 class="bg-green-500/20 text-green-300 px-2 py-1 rounded text-xs font-semibold"
@@ -1294,17 +1398,23 @@ Authorization: Bearer {jwt_token}</pre
       <!-- AI Nutrition Section -->
       <div
         id="nutrition"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
           <i class="fas fa-brain text-cyan-400"></i>
           AI Nutrition Analysis
         </h2>
 
         <!-- Analyze Food Image -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Analyze Food Image</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Analyze Food Image
+            </h3>
             <span
               class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >POST</span
@@ -1355,9 +1465,11 @@ Content-Type: multipart/form-data</pre
         </div>
 
         <!-- Analyze Food Text -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
               Analyze Food from Text
             </h3>
             <span
@@ -1402,9 +1514,13 @@ Content-Type: multipart/form-data</pre
         </div>
 
         <!-- Quick Food Check -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Quick Food Check</h3>
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Quick Food Check
+            </h3>
             <span
               class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >POST</span
@@ -1446,17 +1562,21 @@ Content-Type: multipart/form-data</pre
       <!-- Nutrition Info Section -->
       <div
         id="nutrition-info"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
           <i class="fas fa-info-circle text-blue-400"></i>
           Nutrition Information Lookup
         </h2>
 
         <!-- Get Nutrition Info -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
               Search Nutrition Info
             </h3>
             <span
@@ -1507,17 +1627,23 @@ Content-Type: multipart/form-data</pre
       <!-- Food Wiki Section -->
       <div
         id="food-wiki"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
           <i class="fas fa-book text-yellow-400"></i>
           Food Wiki (USDA FoodData Central)
         </h2>
 
         <!-- Search Foods -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Search Foods</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Search Foods
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -1564,9 +1690,13 @@ Content-Type: multipart/form-data</pre
         </div>
 
         <!-- Get Food Details -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get Food Details</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Food Details
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -1586,9 +1716,13 @@ Content-Type: multipart/form-data</pre
         </div>
 
         <!-- Get Multiple Foods -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get Multiple Foods</h3>
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Multiple Foods
+            </h3>
             <span
               class="bg-green-500/20 text-green-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >POST</span
@@ -1621,17 +1755,23 @@ Content-Type: multipart/form-data</pre
       <!-- Recipes Section -->
       <div
         id="recipes"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
           <i class="fas fa-book-open text-orange-400"></i>
           Recipes (TheMealDB)
         </h2>
 
         <!-- Search Recipes -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Search Recipes</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Search Recipes
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -1660,9 +1800,13 @@ Content-Type: multipart/form-data</pre
         </div>
 
         <!-- Get Random Recipes -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get Random Recipes</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Random Recipes
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -1693,9 +1837,13 @@ Content-Type: multipart/form-data</pre
         </div>
 
         <!-- Get Recipe by ID -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Get Recipe by ID</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Recipe by ID
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -1715,9 +1863,13 @@ Content-Type: multipart/form-data</pre
         </div>
 
         <!-- Filter by Category -->
-        <div class="mb-8 bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Filter by Category</h3>
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Filter by Category
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -1737,9 +1889,13 @@ Content-Type: multipart/form-data</pre
         </div>
 
         <!-- Filter by Area -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">Filter by Area</h3>
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Filter by Area
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -1762,17 +1918,23 @@ Content-Type: multipart/form-data</pre
       <!-- System Section -->
       <div
         id="status"
-        class="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
       >
-        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
           <i class="fas fa-server text-emerald-400"></i>
           System Status
         </h2>
 
         <!-- Status Check -->
-        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-semibold text-white">System Status</h3>
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              System Status
+            </h3>
             <span
               class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
               >GET</span
@@ -1790,9 +1952,11 @@ Content-Type: multipart/form-data</pre
             <pre
               class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
             ><code>{
-  "status": "online",
-  "version": "0.5.5",
-  "timestamp": "2025-01-01T12:00:00Z"
+  "status": "healthy",
+  "service": "Alimentify API",
+  "version": "0.5.7",
+  "timestamp": "2025-01-01T12:00:00Z",
+  "environment": "production"
 }</code></pre>
           </div>
           <div class="flex items-center gap-2 text-sm text-gray-500">
@@ -1806,7 +1970,7 @@ Content-Type: multipart/form-data</pre
       <div
         class="text-center text-gray-500 text-sm py-8 border-t border-gray-800"
       >
-        <p class="mb-2">Alimentify Backend API Documentation v0.5.5</p>
+        <p class="mb-2">Alimentify Backend API Documentation v0.5.7</p>
         <p class="mb-2">Built with Rust, Axum & MongoDB</p>
         <div class="flex items-center justify-center gap-4 mt-3 text-xs">
           <span
