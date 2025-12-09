@@ -32,7 +32,7 @@ dependencies = [
 
 [[package]]
 name = "alimentify"
-version = "0.5.0"
+version = "0.5.5"
 dependencies = [
  "anyhow",
  "async-trait",

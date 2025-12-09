@@ -8,6 +8,12 @@ use crate::{ db::AppState, error::AppError };
 pub struct NutritionAnalysisResponse {
     pub success: bool,
     pub analysis: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_valid_food: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub message: Option<String>,
     pub timestamp: chrono::DateTime<chrono::Utc>,
 }
 
@@ -86,18 +92,51 @@ pub async fn analyze_food(
         .analyze_food_image(&image_data, &mime_type).await
         .map_err(|e| {
             tracing::error!("Gemini API error: {}", e);
+            let error_msg = e.to_string();
+            if error_msg.contains("SAFETY") || error_msg.contains("blocked") || error_msg.contains("filter") {
+                return AppError::BadRequest("This image could not be processed. Please upload a clear photo of food.".to_string());
+            }
             AppError::InternalError(e)
         })?;
 
     tracing::info!("Successfully analyzed food image");
 
+    let (is_valid_food, error_type, message) = parse_validation_response(&analysis);
+
     let response = NutritionAnalysisResponse {
         success: true,
         analysis,
+        is_valid_food: Some(is_valid_food),
+        error_type,
+        message,
         timestamp: chrono::Utc::now(),
     };
 
     Ok((StatusCode::OK, Json(response)))
+}
+
+fn parse_validation_response(analysis: &str) -> (bool, Option<String>, Option<String>) {
+    if let Some(start) = analysis.find('{') {
+        if let Some(end) = analysis.rfind('}') {
+            let json_str = &analysis[start..=end];
+            if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(json_str) {
+                let is_valid = parsed.get("is_valid_food")
+                    .and_then(|v| v.as_bool())
+                    .unwrap_or(true);
+                
+                if !is_valid {
+                    let error_type = parsed.get("error_type")
+                        .and_then(|v| v.as_str())
+                        .map(|s| s.to_string());
+                    let message = parsed.get("message")
+                        .and_then(|v| v.as_str())
+                        .map(|s| s.to_string());
+                    return (false, error_type, message);
+                }
+            }
+        }
+    }
+    (true, None, None)
 }
 
 pub async fn quick_food_check(
