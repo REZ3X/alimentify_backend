@@ -34,8 +34,8 @@ pub fn create_routes(state: AppState) -> Router {
     let public_routes = Router::new()
         .route("/api/auth/google", get(handlers::auth::google_auth_url))
         .route("/api/auth/google/callback", get(handlers::auth::google_callback))
-        .route("/api/auth/verify-email", get(handlers::auth::verify_email))
-        .route("/api/auth/debug-config", get(handlers::auth::debug_config));
+        .route("/api/auth/verify-email", get(handlers::auth::verify_email));
+        // .route("/api/auth/debug-config", get(handlers::auth::debug_config));
 
     Router::new()
         .route("/", get(handlers::dashboard::serve_dashboard))

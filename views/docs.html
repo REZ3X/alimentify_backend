@@ -96,7 +96,7 @@
         >
           <span
             class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30"
-            >Version 0.6.1</span
+            >Version 0.6.2</span
           >
           <span
             class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30 break-all"
@@ -111,7 +111,7 @@
           <h3
             class="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2"
           >
-            <i class="fas fa-sparkles"></i>What's New in v0.6.1
+            <i class="fas fa-sparkles"></i>What's New in v0.6.2
           </h3>
           <ul class="text-sm text-gray-300 space-y-1">
             <li>
@@ -442,49 +442,6 @@ Authorization: Bearer {jwt_token}</pre
           <div class="flex items-center gap-2 text-sm text-yellow-500">
             <i class="fas fa-lock"></i>
             <span>Protected endpoint - Requires authentication</span>
-          </div>
-        </div>
-
-        <!-- Debug Config (Development Only) -->
-        <div
-          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
-        >
-          <div class="flex items-center justify-between mb-4 endpoint-header">
-            <h3 class="text-lg sm:text-xl font-semibold text-white">
-              Debug Configuration
-            </h3>
-            <div class="flex items-center gap-2">
-              <span
-                class="bg-orange-500/20 text-orange-300 px-2 py-1 rounded text-xs font-semibold"
-                >DEV ONLY</span
-              >
-              <span
-                class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded text-sm font-semibold code-font"
-                >GET</span
-              >
-            </div>
-          </div>
-          <code
-            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
-            >/api/auth/debug-config</code
-          >
-          <p class="text-gray-400 mb-4">
-            Returns sanitized OAuth configuration for debugging purposes. Use
-            only in development.
-          </p>
-          <div class="mb-4">
-            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
-            <pre
-              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
-            ><code>{
-  "client_id": "your-client-id",
-  "redirect_uri": "http://localhost:4000/api/auth/google/callback",
-  "frontend_url": "http://localhost:3000"
-}</code></pre>
-          </div>
-          <div class="flex items-center gap-2 text-sm text-orange-500">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span>Development only - Should be disabled in production</span>
           </div>
         </div>
       </div>
@@ -1954,7 +1911,7 @@ Content-Type: multipart/form-data</pre
             ><code>{
   "status": "healthy",
   "service": "Alimentify API",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "timestamp": "2025-01-01T12:00:00Z",
   "environment": "production"
 }</code></pre>
@@ -1970,7 +1927,7 @@ Content-Type: multipart/form-data</pre
       <div
         class="text-center text-gray-500 text-sm py-8 border-t border-gray-800"
       >
-        <p class="mb-2">Alimentify Backend API Documentation v0.6.1</p>
+        <p class="mb-2">Alimentify Backend API Documentation v0.6.2</p>
         <p class="mb-2">Built with Rust, Axum & MongoDB</p>
         <div class="flex items-center justify-center gap-4 mt-3 text-xs">
           <span
