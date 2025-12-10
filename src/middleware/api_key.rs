@@ -12,6 +12,9 @@ const PUBLIC_PATHS: &[&str] = &[
     "/",
     "/docs",
     "/status",
+    "/api/auth/google",
+    "/api/auth/google/callback",
+    "/api/auth/verify-email",
 ];
 
 pub async fn api_key_middleware(
