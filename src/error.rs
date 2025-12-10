@@ -11,6 +11,8 @@ pub enum AppError {
     #[error("Internal server error")] InternalError(#[from] anyhow::Error),
 
     #[allow(dead_code)] #[error("Validation error: {0}")] ValidationError(String),
+
+    #[error("External API unavailable: {0}")] ExternalApiError(String),
 }
 
 impl IntoResponse for AppError {
@@ -21,6 +23,8 @@ impl IntoResponse for AppError {
             AppError::ValidationError(msg) => (StatusCode::UNPROCESSABLE_ENTITY, msg),
             AppError::InternalError(_) =>
                 (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error".to_string()),
+            AppError::ExternalApiError(msg) =>
+                (StatusCode::SERVICE_UNAVAILABLE, msg),
         };
 
         let body = Json(json!({

@@ -23,22 +23,56 @@ pub async fn send_verification_email(
 
     let email_body = format!(
         r#"
+        <!DOCTYPE html>
         <html>
-            <body style="font-family: Arial, sans-serif; padding: 20px;">
-                <h2>Welcome to Alimentify!</h2>
-                <p>Hello {},</p>
-                <p>Thank you for registering with Alimentify. Please verify your email address by clicking the button below:</p>
-                <p style="margin: 30px 0;">
-                    <a href="{}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px;">
-                        Verify Email
-                    </a>
-                </p>
-                <p>Or copy and paste this link into your browser:</p>
-                <p><a href="{}">{}</a></p>
-                <p>This link will expire in 24 hours.</p>
-                <p>If you didn't create an account, please ignore this email.</p>
-                <br>
-                <p>Best regards,<br>The Alimentify Team</p>
+            <head>
+                <style>
+                    body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #FEF3E2; }}
+                    .wrapper {{ width: 100%; table-layout: fixed; background-color: #FEF3E2; padding-bottom: 40px; }}
+                    .webkit {{ max-width: 600px; margin: 0 auto; }}
+                    .outer {{ margin: 0 auto; width: 100%; max-width: 600px; }}
+                    .header {{ text-align: center; padding: 30px 0; }}
+                    .logo-circle {{ display: inline-block; width: 50px; height: 50px; background-color: #FAB12F; border-radius: 50%; margin-bottom: 10px; }}
+                    .card {{ background-color: #ffffff; border-radius: 32px; padding: 40px; box-shadow: 0 8px 32px rgba(250, 177, 47, 0.1); border: 1px solid rgba(255, 255, 255, 0.5); }}
+                    h2 {{ color: #1a1a1a; margin-top: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }}
+                    p {{ color: #4a4a4a; font-size: 16px; line-height: 1.6; }}
+                    .btn-container {{ text-align: center; margin: 35px 0; }}
+                    .btn {{ background: linear-gradient(to right, #FAB12F, #FA812F); color: white !important; padding: 16px 32px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; box-shadow: 0 4px 15px rgba(250, 129, 47, 0.3); }}
+                    .link-text {{ color: #FA812F; word-break: break-all; font-size: 14px; }}
+                    .footer {{ text-align: center; margin-top: 30px; color: #888888; font-size: 12px; }}
+                </style>
+            </head>
+            <body>
+                <div class="wrapper">
+                    <div class="webkit">
+                        <div class="outer">
+                            <div class="header">
+                                <div class="logo-circle"></div>
+                                <h3 style="margin: 5px 0 0 0; color: #1a1a1a;">Alimentify</h3>
+                            </div>
+                            <div class="card">
+                                <h2>Welcome to Alimentify! 👋</h2>
+                                <p>Hello <strong>{}</strong>,</p>
+                                <p>Thank you for joining us! To get started with your nutrition journey, please verify your email address.</p>
+                                
+                                <div class="btn-container">
+                                    <a href="{}" class="btn">Verify Email Address</a>
+                                </div>
+                                
+                                <p style="font-size: 14px; color: #666;">Or copy and paste this link into your browser:</p>
+                                <p><a href="{}" class="link-text">{}</a></p>
+                                
+                                <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+                                
+                                <p style="font-size: 13px; color: #888; margin-bottom: 0;">This link will expire in 24 hours.</p>
+                                <p style="font-size: 13px; color: #888; margin-top: 5px;">If you didn't create an account, please ignore this email.</p>
+                            </div>
+                            <div class="footer">
+                                <p>&copy; 2025 Alimentify. All rights reserved.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </body>
         </html>
         "#,
@@ -112,31 +146,39 @@ impl EmailService {
         };
 
         let goal_status_emoji = if report.goal_achieved { "🎉" } else { "📊" };
-        let goal_status_text = if report.goal_achieved {
-            "<span style='color: #4CAF50; font-weight: bold;'>✅ ACHIEVED</span>"
-        } else {
-            "<span style='color: #FF9800; font-weight: bold;'>⏳ IN PROGRESS</span>"
-        };
 
         let weight_section = if let (Some(start), Some(end), Some(change), Some(target)) = 
             (report.starting_weight, report.ending_weight, report.weight_change, report.target_weight) {
             format!(
                 r#"
-                <div style="background-color: #E3F2FD; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                    <h3 style="color: #1976D2; margin-top: 0;">💪 Weight Progress</h3>
-                    <p><strong>Starting Weight:</strong> {:.1} kg</p>
-                    <p><strong>Current Weight:</strong> {:.1} kg</p>
-                    <p><strong>Change:</strong> {:+.1} kg</p>
-                    <p><strong>Target Weight:</strong> {:.1} kg</p>
-                    <p><strong>Goal Status:</strong> {}</p>
+                <div style="background-color: #F8FAFC; padding: 20px; border-radius: 24px; margin: 20px 0; border: 1px solid #E2E8F0;">
+                    <h3 style="color: #3B82F6; margin-top: 0; font-size: 18px;">
+                        <span style="background: #EFF6FF; width: 32px; height: 32px; border-radius: 50%; display: inline-block; text-align: center; line-height: 32px; margin-right: 10px;">💪</span> 
+                        Weight Progress
+                    </h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748B;">Starting Weight</td>
+                            <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1E293B;">{:.1} kg</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748B;">Current Weight</td>
+                            <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1E293B;">{:.1} kg</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748B;">Change</td>
+                            <td style="padding: 8px 0; text-align: right; font-weight: bold; color: {};">{:+.1} kg</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748B;">Target</td>
+                            <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1E293B;">{:.1} kg</td>
+                        </tr>
+                    </table>
                 </div>
                 "#,
-                start, end, change, target,
-                if report.weight_goal_achieved.unwrap_or(false) {
-                    "✅ Reached"
-                } else {
-                    "⏳ In Progress"
-                }
+                start, end, 
+                if change < 0.0 { "#10B981" } else { "#EF4444" },
+                change, target
             )
         } else {
             String::new()
@@ -146,7 +188,11 @@ impl EmailService {
             (&report.best_day_date, report.best_day_compliance) {
             format!(
                 r#"
-                <p><strong>🏆 Best Day:</strong> {} ({:.1}% compliance)</p>
+                <div style="background: linear-gradient(to right, #FFF7ED, #FFFBEB); padding: 15px; border-radius: 16px; margin-top: 20px; border: 1px solid #FED7AA;">
+                    <p style="margin: 0; color: #9A3412; font-size: 14px;">
+                        <strong>🏆 Best Day:</strong> {} with <span style="color: #EA580C; font-weight: 800;">{:.1}%</span> compliance!
+                    </p>
+                </div>
                 "#,
                 date, compliance
             )
@@ -156,101 +202,143 @@ impl EmailService {
 
         let email_body = format!(
             r#"
+            <!DOCTYPE html>
             <html>
                 <head>
                     <style>
-                        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f5f5f5; }}
-                        .container {{ max-width: 600px; margin: 0 auto; background-color: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }}
-                        h1 {{ color: #2E7D32; }}
-                        h2 {{ color: #388E3C; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }}
-                        h3 {{ color: #4CAF50; }}
-                        .metric {{ background-color: #F1F8E9; padding: 12px; border-radius: 6px; margin: 10px 0; }}
-                        .metric-label {{ font-weight: bold; color: #558B2F; }}
-                        .metric-value {{ font-size: 1.2em; color: #33691E; }}
-                        .goal-badge {{ display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; margin: 10px 0; }}
-                        .achieved {{ background-color: #C8E6C9; color: #1B5E20; }}
-                        .in-progress {{ background-color: #FFE0B2; color: #E65100; }}
-                        .footer {{ margin-top: 30px; padding-top: 20px; border-top: 1px solid #E0E0E0; color: #757575; font-size: 0.9em; }}
+                        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #FEF3E2; }}
+                        .wrapper {{ width: 100%; table-layout: fixed; background-color: #FEF3E2; padding-bottom: 40px; }}
+                        .webkit {{ max-width: 600px; margin: 0 auto; }}
+                        .outer {{ margin: 0 auto; width: 100%; max-width: 600px; }}
+                        .header {{ text-align: center; padding: 30px 0; }}
+                        .logo-circle {{ display: inline-block; width: 40px; height: 40px; background-color: #FAB12F; border-radius: 50%; margin-bottom: 5px; }}
+                        .card {{ background-color: #ffffff; border-radius: 32px; padding: 40px; box-shadow: 0 8px 32px rgba(250, 177, 47, 0.1); border: 1px solid rgba(255, 255, 255, 0.5); }}
+                        
+                        h1 {{ color: #1a1a1a; font-size: 24px; font-weight: 800; margin-top: 0; letter-spacing: -0.5px; }}
+                        h2 {{ color: #4a4a4a; font-size: 18px; margin-top: 30px; margin-bottom: 15px; font-weight: 700; }}
+                        
+                        .status-banner {{ background: linear-gradient(to right, #FAB12F, #FA812F); padding: 24px; border-radius: 24px; margin: 25px 0; text-align: center; color: white; box-shadow: 0 4px 12px rgba(250, 129, 47, 0.2); }}
+                        
+                        .grid-2 {{ display: table; width: 100%; border-spacing: 10px; margin: 0 -10px; }}
+                        .col {{ display: table-cell; width: 50%; vertical-align: top; }}
+                        
+                        .metric-card {{ background-color: #F8FAFC; padding: 16px; border-radius: 20px; margin-bottom: 10px; border: 1px solid #F1F5F9; }}
+                        .metric-label {{ font-size: 12px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 4px; }}
+                        .metric-value {{ font-size: 18px; font-weight: 800; color: #1E293B; }}
+                        
+                        .progress-container {{ margin-bottom: 15px; }}
+                        .progress-bar-bg {{ background-color: #F1F5F9; height: 8px; border-radius: 4px; overflow: hidden; }}
+                        .progress-bar-fill {{ height: 100%; border-radius: 4px; }}
+                        
+                        .footer {{ text-align: center; margin-top: 30px; color: #888888; font-size: 12px; }}
+                        .btn {{ background-color: #1E293B; color: white !important; padding: 12px 24px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; font-size: 14px; margin-top: 20px; }}
                     </style>
                 </head>
                 <body>
-                    <div class="container">
-                        <h1>{} {} Nutrition Report</h1>
-                        <p>Hello <strong>{}</strong>,</p>
-                        <p>Here's your nutrition summary for <strong>{}</strong> to <strong>{}</strong></p>
+                    <div class="wrapper">
+                        <div class="webkit">
+                            <div class="outer">
+                                <div class="header">
+                                    <div class="logo-circle"></div>
+                                    <h3 style="margin: 5px 0 0 0; color: #1a1a1a; font-family: monospace;">Alimentify</h3>
+                                </div>
+                                
+                                <div class="card">
+                                    <h1>{} {} Report</h1>
+                                    <p style="color: #64748B; margin-top: 5px;">For <strong>{}</strong> • {} - {}</p>
 
-                        <div style="background-color: {}; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
-                            <h2 style="margin: 0; color: white; border: none;">Goal Status: {}</h2>
-                        </div>
+                                    <div class="status-banner">
+                                        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">OVERALL STATUS</div>
+                                        <div style="font-size: 24px; font-weight: 800;">{}</div>
+                                    </div>
 
-                        <h2>📊 Summary Statistics</h2>
-                        <div class="metric">
-                            <span class="metric-label">Total Days in Period:</span>
-                            <span class="metric-value">{}</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Days Logged:</span>
-                            <span class="metric-value">{} ({:.1}%)</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Total Meals:</span>
-                            <span class="metric-value">{}</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Logging Streak:</span>
-                            <span class="metric-value">{} days 🔥</span>
-                        </div>
+                                    <h2>📊 Summary Statistics</h2>
+                                    <div class="grid-2">
+                                        <div class="col">
+                                            <div class="metric-card">
+                                                <span class="metric-label">Logged</span>
+                                                <span class="metric-value">{} <span style="font-size: 14px; color: #94A3B8; font-weight: normal;">/ {} days</span></span>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="metric-card">
+                                                <span class="metric-label">Streak</span>
+                                                <span class="metric-value">{} <span style="font-size: 14px; color: #94A3B8; font-weight: normal;">days 🔥</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <h2>🎯 Nutrition Averages</h2>
-                        <div class="metric">
-                            <span class="metric-label">Calories:</span>
-                            <span class="metric-value">{:.0} kcal/day</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Protein:</span>
-                            <span class="metric-value">{:.1}g/day</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Carbs:</span>
-                            <span class="metric-value">{:.1}g/day</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Fat:</span>
-                            <span class="metric-value">{:.1}g/day</span>
-                        </div>
+                                    <h2>🎯 Daily Averages</h2>
+                                    <div class="grid-2">
+                                        <div class="col">
+                                            <div class="metric-card" style="background-color: #FFF7ED; border-color: #FFEDD5;">
+                                                <span class="metric-label" style="color: #C2410C;">Calories</span>
+                                                <span class="metric-value" style="color: #9A3412;">{:.0}</span>
+                                            </div>
+                                            <div class="metric-card" style="background-color: #EFF6FF; border-color: #DBEAFE;">
+                                                <span class="metric-label" style="color: #1D4ED8;">Protein</span>
+                                                <span class="metric-value" style="color: #1E40AF;">{:.1}g</span>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="metric-card" style="background-color: #F0FDF4; border-color: #DCFCE7;">
+                                                <span class="metric-label" style="color: #15803D;">Carbs</span>
+                                                <span class="metric-value" style="color: #166534;">{:.1}g</span>
+                                            </div>
+                                            <div class="metric-card" style="background-color: #FAF5FF; border-color: #F3E8FF;">
+                                                <span class="metric-label" style="color: #7E22CE;">Fat</span>
+                                                <span class="metric-value" style="color: #6B21A8;">{:.1}g</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <h2>✅ Goal Compliance</h2>
-                        <div class="metric">
-                            <span class="metric-label">Calories Compliance:</span>
-                            <span class="metric-value">{:.1}%</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Protein Compliance:</span>
-                            <span class="metric-value">{:.1}%</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Carbs Compliance:</span>
-                            <span class="metric-value">{:.1}%</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Fat Compliance:</span>
-                            <span class="metric-value">{:.1}%</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Days On Target:</span>
-                            <span class="metric-value">{}/{}</span>
-                        </div>
+                                    <h2>✅ Goal Compliance</h2>
+                                    
+                                    <div class="progress-container">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; color: #475569;">
+                                            <span>Calories</span>
+                                            <span style="font-weight: bold;">{:.1}%</span>
+                                        </div>
+                                        <div class="progress-bar-bg">
+                                            <div class="progress-bar-fill" style="width: {:.1}%; background-color: #F97316;"></div>
+                                        </div>
+                                    </div>
 
-                        {}
+                                    <div class="progress-container">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; color: #475569;">
+                                            <span>Protein</span>
+                                            <span style="font-weight: bold;">{:.1}%</span>
+                                        </div>
+                                        <div class="progress-bar-bg">
+                                            <div class="progress-bar-fill" style="width: {:.1}%; background-color: #3B82F6;"></div>
+                                        </div>
+                                    </div>
 
-                        {}
+                                    <div class="progress-container">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; color: #475569;">
+                                            <span>Carbs</span>
+                                            <span style="font-weight: bold;">{:.1}%</span>
+                                        </div>
+                                        <div class="progress-bar-bg">
+                                            <div class="progress-bar-fill" style="width: {:.1}%; background-color: #22C55E;"></div>
+                                        </div>
+                                    </div>
 
-                        <h2>💡 Keep Going!</h2>
-                        <p>{}</p>
+                                    {}
 
-                        <div class="footer">
-                            <p>This is an automated report from Alimentify. View more details in your dashboard.</p>
-                            <p>Best regards,<br><strong>The Alimentify Team</strong></p>
+                                    {}
+
+                                    <div style="text-align: center; margin-top: 40px;">
+                                        <p style="color: #475569; font-style: italic;">"{}"</p>
+                                        <a href="https://alimentify.app/my/reports" class="btn">View Full Report</a>
+                                    </div>
+                                </div>
+
+                                <div class="footer">
+                                    <p>You received this email because you enabled nutrition reports in your settings.</p>
+                                    <p>&copy; 2025 Alimentify. All rights reserved.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </body>
@@ -261,23 +349,20 @@ impl EmailService {
             user.name,
             report.start_date,
             report.end_date,
-            if report.goal_achieved { "#4CAF50" } else { "#FF9800" },
-            goal_status_text,
-            report.total_days,
+            if report.goal_achieved { "GOAL ACHIEVED" } else { "IN PROGRESS" },
             report.days_logged,
-            (report.days_logged as f64 / report.total_days as f64 * 100.0),
-            report.total_meals,
+            report.total_days,
             report.streak_days,
             report.avg_calories,
             report.avg_protein_g,
             report.avg_carbs_g,
             report.avg_fat_g,
             report.calories_compliance_percent,
+            if report.calories_compliance_percent > 100.0 { 100.0 } else { report.calories_compliance_percent },
             report.protein_compliance_percent,
+            if report.protein_compliance_percent > 100.0 { 100.0 } else { report.protein_compliance_percent },
             report.carbs_compliance_percent,
-            report.fat_compliance_percent,
-            report.days_on_target,
-            report.days_logged,
+            if report.carbs_compliance_percent > 100.0 { 100.0 } else { report.carbs_compliance_percent },
             weight_section,
             best_day_section,
             if report.goal_achieved {

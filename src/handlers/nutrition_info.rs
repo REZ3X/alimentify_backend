@@ -22,8 +22,10 @@ pub async fn get_nutrition_info(
     tracing::info!("Fetching nutrition info for query: {}", params.query);
 
     let result = state.ninja_service.get_nutrition(&params.query).await.map_err(|e| {
-        tracing::error!("Failed to get nutrition info: {}", e);
-        AppError::InternalError(e)
+        tracing::error!("Failed to get nutrition info from Ninja API: {}", e);
+        AppError::ExternalApiError(
+            "Nutrition data service is temporarily unavailable. Please try again later.".to_string()
+        )
     })?;
 
     tracing::info!("Successfully retrieved {} nutrition items", result.len());
