@@ -8,7 +8,15 @@ use serde_json::json;
 
 use crate::db::AppState;
 
-const PUBLIC_PATHS: &[&str] = &["/", "/docs", "/status"];
+const PUBLIC_PATHS: &[&str] = &[
+    "/",
+    "/docs",
+    "/status",
+    "/api/auth/google",
+    "/api/auth/google/callback",
+    "/api/auth/verify-email",
+    "/api/auth/debug-config",
+];
 
 pub async fn api_key_middleware(
     State(state): State<AppState>,
@@ -21,7 +29,12 @@ pub async fn api_key_middleware(
     }
 
     let path = request.uri().path();
-    if PUBLIC_PATHS.contains(&path) {
+
+    let is_public = PUBLIC_PATHS.iter().any(|&public_path| {
+        path == public_path || path.starts_with(&format!("{}?", public_path))
+    });
+    
+    if is_public {
         return Ok(next.run(request).await);
     }
 
