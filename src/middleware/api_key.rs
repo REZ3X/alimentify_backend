@@ -12,10 +12,6 @@ const PUBLIC_PATHS: &[&str] = &[
     "/",
     "/docs",
     "/status",
-    "/api/auth/google",
-    "/api/auth/google/callback",
-    "/api/auth/verify-email",
-    // "/api/auth/debug-config",
 ];
 
 pub async fn api_key_middleware(
@@ -35,10 +31,6 @@ pub async fn api_key_middleware(
     });
     
     if is_public {
-        return Ok(next.run(request).await);
-    }
-
-    if headers.get("authorization").is_some() {
         return Ok(next.run(request).await);
     }
 
