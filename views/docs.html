@@ -96,7 +96,7 @@
         >
           <span
             class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30"
-            >Version 0.6.6</span
+            >Version 0.6.7</span
           >
           <span
             class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30 break-all"
@@ -111,32 +111,37 @@
           <h3
             class="text-sm font-semibold text-green-400 mb-2 flex items-center gap-2"
           >
-            <i class="fas fa-sparkles"></i>What's New in v0.6.6
+            <i class="fas fa-sparkles"></i>What's New in v0.6.7
           </h3>
           <ul class="text-sm text-gray-300 space-y-1">
             <li>
-              <i class="fas fa-check text-green-500 mr-2"></i>Meal Reports with
+              <i class="fas fa-check text-green-500 mr-2"></i>Allergy checking
+              &amp; warnings when logging meals containing user's allergens
+            </li>
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Markdown
+              formatting for AI recommendations (proper rendering of bold,
+              lists, headers)
+            </li>
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Clean notes from
+              AI food scan (health notes, recommendations instead of raw JSON)
+            </li>
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Health profile
+              validation (realistic age, height, weight requirements)
+            </li>
+            <li>
+              <i class="fas fa-check text-green-500 mr-2"></i>Secure API proxy
+              architecture (API keys never exposed to client)
+            </li>
+            <li>
+              <i class="fas fa-check text-gray-400 mr-2"></i>Meal Reports with
               comprehensive nutrition analytics and goal achievement status
-            </li>
-            <li>
-              <i class="fas fa-check text-green-500 mr-2"></i>Email delivery of
-              nutrition reports with HTML formatting
-            </li>
-            <li>
-              <i class="fas fa-check text-green-500 mr-2"></i>Report management
-              (generate, view, delete)
-            </li>
-            <li>
-              <i class="fas fa-check text-green-500 mr-2"></i>Compliance
-              tracking with best day analysis and logging streaks
             </li>
             <li>
               <i class="fas fa-check text-gray-400 mr-2"></i>Advanced Period
               Statistics API with weekly/monthly/yearly analytics
-            </li>
-            <li>
-              <i class="fas fa-check text-gray-400 mr-2"></i>Weight goal
-              tracking with progress estimation
             </li>
           </ul>
         </div>
@@ -216,6 +221,16 @@
             class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
           >
             <i class="fas fa-server text-emerald-400 mr-2"></i>System
+          </a>
+          <a
+            href="#frontend-features"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-pink-500/50 transition-all"
+          >
+            <i class="fas fa-laptop-code text-pink-400 mr-2"></i>Frontend
+            <span
+              class="ml-1 text-xs bg-pink-500/20 text-pink-300 px-2 py-0.5 rounded"
+              >NEW</span
+            >
           </a>
         </div>
       </div>
@@ -500,8 +515,69 @@ Content-Type: application/json</pre
   "height_cm": 175,
   "weight_kg": 70,
   "activity_level": "moderately_active",
-  "goal": "maintain_weight"
+  "goal": "maintain_weight",
+  "allergies": ["Peanuts", "Dairy"],
+  "dietary_preferences": ["vegetarian"],
+  "medical_conditions": ["Diabetes"]
 }</code></pre>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              <i class="fas fa-shield-alt text-yellow-400 mr-1"></i>Validation
+              Rules (Frontend):
+            </h4>
+            <div class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300">
+              <div class="mb-1">
+                <code class="text-purple-300">age</code> - Must be between
+                13-120 years
+              </div>
+              <div class="mb-1">
+                <code class="text-purple-300">height_cm</code> - Must be between
+                50-280 cm
+              </div>
+              <div class="mb-1">
+                <code class="text-purple-300">weight_kg</code> - Must be between
+                20-500 kg
+              </div>
+              <div>
+                <code class="text-purple-300">BMI</code> - Calculated BMI must
+                be between 10-100 (sanity check)
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              <i class="fas fa-allergies text-red-400 mr-1"></i>Supported
+              Allergies:
+            </h4>
+            <div
+              class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300 flex flex-wrap gap-2"
+            >
+              <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded"
+                >Peanuts</span
+              >
+              <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded"
+                >Tree Nuts</span
+              >
+              <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded"
+                >Dairy</span
+              >
+              <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded"
+                >Eggs</span
+              >
+              <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded"
+                >Soy</span
+              >
+              <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded"
+                >Shellfish</span
+              >
+              <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded"
+                >Gluten</span
+              >
+              <span class="bg-red-500/20 text-red-300 px-2 py-1 rounded"
+                >Fish</span
+              >
+            </div>
           </div>
           <div class="mb-4">
             <h4 class="text-sm font-semibold text-gray-300 mb-2">
@@ -696,6 +772,31 @@ Content-Type: application/json</pre
               <code class="text-purple-300">lunch</code>,
               <code class="text-purple-300">dinner</code>,
               <code class="text-purple-300">snack</code>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              <i class="fas fa-allergies text-red-400 mr-1"></i>Allergen Warning
+              (Frontend Feature):
+            </h4>
+            <div
+              class="bg-red-500/10 border border-red-500/30 p-4 rounded-lg text-sm text-gray-300"
+            >
+              <p class="mb-2">
+                The frontend automatically checks food names against the user's
+                allergy preferences before logging meals.
+              </p>
+              <p class="mb-2">If a potential allergen is detected:</p>
+              <ul class="list-disc list-inside ml-2">
+                <li>
+                  A warning dialog is displayed with the detected allergen(s)
+                </li>
+                <li>User can choose to proceed or cancel the meal log</li>
+                <li>
+                  Detection uses keyword matching (e.g., "cheese" → Dairy,
+                  "shrimp" → Shellfish)
+                </li>
+              </ul>
             </div>
           </div>
           <div class="mb-4">
@@ -1415,6 +1516,38 @@ Content-Type: multipart/form-data</pre
   "timestamp": "2025-01-01T12:00:00Z"
 }</code></pre>
           </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              <i class="fas fa-magic text-cyan-400 mr-1"></i>Clean Notes
+              Extraction (Frontend Feature):
+            </h4>
+            <div
+              class="bg-cyan-500/10 border border-cyan-500/30 p-4 rounded-lg text-sm text-gray-300"
+            >
+              <p class="mb-2">
+                When logging meals from AI scan, the frontend extracts clean,
+                human-readable notes instead of raw JSON:
+              </p>
+              <ul class="list-disc list-inside ml-2">
+                <li>
+                  <code class="text-purple-300">health_notes</code> - Key health
+                  information about the food
+                </li>
+                <li>
+                  <code class="text-purple-300">recommendations</code> -
+                  Suggestions for healthier choices
+                </li>
+                <li>
+                  <code class="text-purple-300">health_score</code> - Numerical
+                  score (1-10) for quick reference
+                </li>
+                <li>
+                  <code class="text-purple-300">dietary_info</code> - Dietary
+                  category if applicable
+                </li>
+              </ul>
+            </div>
+          </div>
           <div class="flex items-center gap-2 text-sm text-yellow-500">
             <i class="fas fa-lock"></i>
             <span>Protected endpoint - Requires authentication</span>
@@ -1911,7 +2044,7 @@ Content-Type: multipart/form-data</pre
             ><code>{
   "status": "healthy",
   "service": "Alimentify API",
-  "version": "0.6.6",
+  "version": "0.7.0",
   "timestamp": "2025-01-01T12:00:00Z",
   "environment": "production"
 }</code></pre>
@@ -1923,11 +2056,161 @@ Content-Type: multipart/form-data</pre
         </div>
       </div>
 
+      <!-- Frontend Features Section -->
+      <div
+        id="frontend-features"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
+      >
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
+          <i class="fas fa-laptop-code text-pink-400"></i>
+          Frontend Features (v0.7.0)
+        </h2>
+        <p class="text-gray-400 mb-6">
+          The Alimentify frontend includes additional features that enhance the
+          API data for a better user experience.
+        </p>
+
+        <!-- Markdown Rendering -->
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <h3
+            class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2"
+          >
+            <i class="fas fa-font text-blue-400"></i>
+            Markdown Rendering
+          </h3>
+          <p class="text-gray-400 mb-4">
+            AI-generated text is rendered with proper markdown formatting
+            instead of raw symbols.
+          </p>
+          <div class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300">
+            <div class="mb-2">
+              <code class="text-purple-300"># Headers</code> - Rendered as
+              styled headings (H1-H3)
+            </div>
+            <div class="mb-2">
+              <code class="text-purple-300">**bold**</code> - Rendered as bold
+              text
+            </div>
+            <div class="mb-2">
+              <code class="text-purple-300">*italic*</code> - Rendered as italic
+              text
+            </div>
+            <div class="mb-2">
+              <code class="text-purple-300">- list items</code> - Rendered as
+              bullet lists
+            </div>
+            <div>
+              <code class="text-purple-300">\`code\`</code> - Rendered as inline
+              code
+            </div>
+          </div>
+        </div>
+
+        <!-- Allergen Warning -->
+        <div
+          class="mb-8 bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <h3
+            class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2"
+          >
+            <i class="fas fa-exclamation-triangle text-red-400"></i>
+            Allergen Warning System
+          </h3>
+          <p class="text-gray-400 mb-4">
+            Before logging any meal, the frontend checks food names against the
+            user's allergy preferences and displays a warning dialog if
+            allergens are detected.
+          </p>
+          <div class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300 mb-4">
+            <div class="font-semibold text-white mb-2">How it works:</div>
+            <ol class="list-decimal list-inside space-y-1">
+              <li>User attempts to log a meal</li>
+              <li>
+                System checks food name keywords against user's allergy list
+              </li>
+              <li>
+                If match found, warning dialog appears with detected allergen(s)
+              </li>
+              <li>User can confirm to proceed or cancel the action</li>
+            </ol>
+          </div>
+          <div class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300">
+            <div class="font-semibold text-white mb-2">Keyword Examples:</div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <span class="text-red-300">Peanuts:</span> peanut, groundnut
+              </div>
+              <div>
+                <span class="text-red-300">Tree Nuts:</span> almond, walnut,
+                cashew
+              </div>
+              <div>
+                <span class="text-red-300">Dairy:</span> milk, cheese, cream,
+                yogurt
+              </div>
+              <div>
+                <span class="text-red-300">Eggs:</span> egg, omelet, meringue
+              </div>
+              <div>
+                <span class="text-red-300">Shellfish:</span> shrimp, crab,
+                lobster
+              </div>
+              <div>
+                <span class="text-red-300">Gluten:</span> wheat, bread, pasta
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Profile Validation -->
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 border border-gray-700"
+        >
+          <h3
+            class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2"
+          >
+            <i class="fas fa-shield-alt text-yellow-400"></i>
+            Health Profile Validation
+          </h3>
+          <p class="text-gray-400 mb-4">
+            The health survey form validates user input to prevent unrealistic
+            values before submission.
+          </p>
+          <div class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div class="font-semibold text-white mb-2">
+                  Validation Rules:
+                </div>
+                <ul class="list-disc list-inside space-y-1">
+                  <li>Age: 13-120 years</li>
+                  <li>Height: 50-280 cm</li>
+                  <li>Weight: 20-500 kg</li>
+                  <li>BMI sanity check: 10-100</li>
+                </ul>
+              </div>
+              <div>
+                <div class="font-semibold text-white mb-2">Error Messages:</div>
+                <ul class="list-disc list-inside space-y-1">
+                  <li>Clear, user-friendly warnings</li>
+                  <li>Form submission blocked until valid</li>
+                  <li>Toast notifications for feedback</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Footer -->
       <div
         class="text-center text-gray-500 text-sm py-8 border-t border-gray-800"
       >
-        <p class="mb-2">Alimentify Backend API Documentation v0.6.6</p>
+        <p class="mb-2">Alimentify Backend API Documentation v0.7.0</p>
         <p class="mb-2">Built with Rust, Axum & MongoDB</p>
         <div class="flex items-center justify-center gap-4 mt-3 text-xs">
           <span
