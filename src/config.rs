@@ -19,6 +19,7 @@ pub struct ServerConfig {
     #[allow(dead_code)]
     pub host: String,
     pub environment: Environment,
+    pub frontend_url: String,
 }
 
 #[derive(Debug, Clone, Deserialize, PartialEq)]
@@ -119,6 +120,15 @@ impl Config {
                 } else {
                     Environment::Development
                 },
+                frontend_url: if is_production {
+                    env::var("PRODUCTION_FRONTEND_ORIGIN").unwrap_or_else(|_|
+                        "https://yourdomain.com".to_string()
+                    )
+                } else {
+                    env::var("DEV_FRONTEND_ORIGIN").unwrap_or_else(|_|
+                        "http://localhost:3000".to_string()
+                    )
+                },
             },
             mongodb: MongoConfig {
                 uri: env::var("MONGODB_URI").expect("MONGODB_URI must be set"),
@@ -174,12 +184,8 @@ impl Config {
                     .unwrap_or(is_production),
             },
             docs: DocsConfig {
-                username: env
-                    ::var("DOCS_USERNAME")
-                    .unwrap_or_else(|_| "admin".to_string()),
-                password: env
-                    ::var("DOCS_PASSWORD")
-                    .unwrap_or_else(|_| "changeme".to_string()),
+                username: env::var("DOCS_USERNAME").unwrap_or_else(|_| "admin".to_string()),
+                password: env::var("DOCS_PASSWORD").unwrap_or_else(|_| "changeme".to_string()),
             },
         };
 

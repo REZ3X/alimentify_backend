@@ -3,28 +3,26 @@ use serde::{ Deserialize, Serialize };
 use mongodb::bson::oid::ObjectId;
 
 mod bson_datetime {
-    use chrono::{DateTime, Utc, TimeZone};
-    use serde::{self, Deserialize, Deserializer, Serializer};
+    use chrono::{ DateTime, Utc, TimeZone };
+    use serde::{ self, Deserialize, Deserializer, Serializer };
 
     pub fn serialize<S>(date: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
+        where S: Serializer
     {
         let s = date.to_rfc3339();
         serializer.serialize_str(&s)
     }
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Utc>, D::Error>
-    where
-        D: Deserializer<'de>,
+        where D: Deserializer<'de>
     {
         #[derive(Deserialize)]
         #[serde(untagged)]
         enum DateTimeFormat {
             String(String),
-            BsonDateTime { 
-                #[serde(rename = "$date")] 
-                date: DateValue 
+            BsonDateTime {
+                #[serde(rename = "$date")]
+                date: DateValue,
             },
         }
 
@@ -32,15 +30,15 @@ mod bson_datetime {
         #[serde(untagged)]
         enum DateValue {
             String(String),
-            Timestamp { 
-                #[serde(rename = "$numberLong")] 
-                number_long: String 
+            Timestamp {
+                #[serde(rename = "$numberLong")]
+                number_long: String,
             },
             Number(i64),
         }
 
         let value = DateTimeFormat::deserialize(deserializer)?;
-        
+
         match value {
             DateTimeFormat::String(s) => {
                 DateTime::parse_from_rfc3339(&s)
@@ -60,7 +58,8 @@ mod bson_datetime {
                             .map_err(serde::de::Error::custom)
                     }
                     DateValue::Timestamp { number_long } => {
-                        number_long.parse::<i64>()
+                        number_long
+                            .parse::<i64>()
                             .ok()
                             .and_then(|ts| Utc.timestamp_millis_opt(ts).single())
                             .ok_or_else(|| serde::de::Error::custom("Invalid timestamp"))
@@ -78,10 +77,9 @@ mod bson_datetime {
 
 fn serialize_object_id_as_string<S>(
     id: &Option<mongodb::bson::oid::ObjectId>,
-    serializer: S,
+    serializer: S
 ) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
+    where S: serde::Serializer
 {
     match id {
         Some(oid) => serializer.serialize_str(&oid.to_hex()),
@@ -90,12 +88,11 @@ where
 }
 
 mod bson_datetime_option {
-    use chrono::{DateTime, Utc, TimeZone};
-    use serde::{self, Deserialize, Deserializer, Serializer};
+    use chrono::{ DateTime, Utc, TimeZone };
+    use serde::{ self, Deserialize, Deserializer, Serializer };
 
     pub fn serialize<S>(date: &Option<DateTime<Utc>>, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
+        where S: Serializer
     {
         match date {
             Some(d) => {
@@ -107,16 +104,15 @@ mod bson_datetime_option {
     }
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<DateTime<Utc>>, D::Error>
-    where
-        D: Deserializer<'de>,
+        where D: Deserializer<'de>
     {
         #[derive(Deserialize)]
         #[serde(untagged)]
         enum DateTimeFormat {
             String(String),
-            BsonDateTime { 
-                #[serde(rename = "$date")] 
-                date: DateValue 
+            BsonDateTime {
+                #[serde(rename = "$date")]
+                date: DateValue,
             },
         }
 
@@ -124,15 +120,15 @@ mod bson_datetime_option {
         #[serde(untagged)]
         enum DateValue {
             String(String),
-            Timestamp { 
-                #[serde(rename = "$numberLong")] 
-                number_long: String 
+            Timestamp {
+                #[serde(rename = "$numberLong")]
+                number_long: String,
             },
             Number(i64),
         }
 
         let value: Option<DateTimeFormat> = Option::deserialize(deserializer)?;
-        
+
         match value {
             None => Ok(None),
             Some(DateTimeFormat::String(s)) => {
@@ -154,7 +150,8 @@ mod bson_datetime_option {
                             .map_err(serde::de::Error::custom)
                     }
                     DateValue::Timestamp { number_long } => {
-                        number_long.parse::<i64>()
+                        number_long
+                            .parse::<i64>()
                             .ok()
                             .and_then(|ts| Utc.timestamp_millis_opt(ts).single())
                             .map(Some)
@@ -185,11 +182,7 @@ pub struct User {
     pub email_verification_status: bool,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub email_verification_token: Option<String>,
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        default,
-        with = "bson_datetime_option"
-    )]
+    #[serde(skip_serializing_if = "Option::is_none", default, with = "bson_datetime_option")]
     pub email_verified_at: Option<DateTime<Utc>>,
     #[serde(with = "bson_datetime")]
     pub created_at: DateTime<Utc>,
@@ -284,7 +277,7 @@ pub struct HealthProfile {
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub blood_pressure: Option<BloodPressure>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
-    pub fasting_blood_sugar: Option<f64>, 
+    pub fasting_blood_sugar: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub allergies: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
@@ -502,7 +495,11 @@ pub enum ReportStatus {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MealReport {
-    #[serde(rename = "_id", skip_serializing_if = "Option::is_none", serialize_with = "serialize_object_id_as_string")]
+    #[serde(
+        rename = "_id",
+        skip_serializing_if = "Option::is_none",
+        serialize_with = "serialize_object_id_as_string"
+    )]
     pub id: Option<ObjectId>,
     pub user_id: ObjectId,
     pub report_type: ReportPeriod,
@@ -510,7 +507,7 @@ pub struct MealReport {
     pub end_date: String,
     pub generated_at: DateTime<Utc>,
     pub status: ReportStatus,
-    
+
     pub total_days: usize,
     pub days_logged: usize,
     pub total_meals: usize,
@@ -518,7 +515,7 @@ pub struct MealReport {
     pub avg_protein_g: f64,
     pub avg_carbs_g: f64,
     pub avg_fat_g: f64,
-    
+
     pub goal_type: String,
     pub goal_achieved: bool,
     pub calories_compliance_percent: f64,
@@ -537,4 +534,58 @@ pub struct MealReport {
     pub best_day_compliance: Option<f64>,
     pub streak_days: usize,
     pub notes: Option<String>,
+}
+
+// ==================== Chat Models ====================
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ChatSession {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub user_id: ObjectId,
+    pub title: String,
+    #[serde(with = "bson_datetime")]
+    pub created_at: DateTime<Utc>,
+    #[serde(with = "bson_datetime")]
+    pub updated_at: DateTime<Utc>,
+    pub message_count: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ChatMessage {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub session_id: ObjectId,
+    pub user_id: ObjectId,
+    pub role: MessageRole,
+    pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub image_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tool_calls: Option<Vec<ToolCall>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tool_results: Option<Vec<ToolResult>>,
+    #[serde(with = "bson_datetime")]
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum MessageRole {
+    User,
+    Assistant,
+    System,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ToolCall {
+    pub tool_name: String,
+    pub parameters: serde_json::Value,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ToolResult {
+    pub tool_name: String,
+    pub result: serde_json::Value,
+    pub success: bool,
 }
