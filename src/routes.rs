@@ -29,13 +29,19 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/reports", get(handlers::reports::get_user_reports))
         .route("/api/reports/:id", get(handlers::reports::get_report_by_id))
         .route("/api/reports/:id", delete(handlers::reports::delete_report))
+        .route("/api/chat/sessions", post(handlers::chat::create_chat_session))
+        .route("/api/chat/sessions", get(handlers::chat::get_chat_sessions))
+        .route("/api/chat/sessions/:id", get(handlers::chat::get_chat_session))
+        .route("/api/chat/sessions/:id", delete(handlers::chat::delete_chat_session))
+        .route("/api/chat/sessions/:id/messages", post(handlers::chat::send_message))
+        .route("/api/chat/sessions/:id/messages", get(handlers::chat::get_chat_messages))
         .route_layer(middleware::from_fn_with_state(state.clone(), mw::auth::auth_middleware));
 
     let public_routes = Router::new()
         .route("/api/auth/google", get(handlers::auth::google_auth_url))
         .route("/api/auth/google/callback", get(handlers::auth::google_callback))
         .route("/api/auth/verify-email", get(handlers::auth::verify_email));
-        // .route("/api/auth/debug-config", get(handlers::auth::debug_config));
+    // .route("/api/auth/debug-config", get(handlers::auth::debug_config));
 
     Router::new()
         .route("/", get(handlers::dashboard::serve_dashboard))

@@ -8,3 +8,4 @@ pub mod recipes;
 pub mod health;
 pub mod meals;
 pub mod reports;
+pub mod chat;

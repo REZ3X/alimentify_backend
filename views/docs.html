@@ -143,6 +143,19 @@
               <i class="fas fa-check text-gray-400 mr-2"></i>Advanced Period
               Statistics API with weekly/monthly/yearly analytics
             </li>
+            <li>
+              <i class="fas fa-check text-purple-400 mr-2"></i>AI Chat Agent
+              with 6 tools for meal logging, stats, reports, and nutrition
+              guidance
+            </li>
+            <li>
+              <i class="fas fa-check text-purple-400 mr-2"></i>Image analysis
+              for automatic meal nutrition extraction and logging
+            </li>
+            <li>
+              <i class="fas fa-check text-purple-400 mr-2"></i>Chat sessions
+              with markdown formatting and tool execution tracking
+            </li>
           </ul>
         </div>
       </div>
@@ -213,6 +226,16 @@
             <i class="fas fa-file-alt text-blue-400 mr-2"></i>Reports
             <span
               class="ml-1 text-xs bg-green-500/20 text-green-300 px-2 py-0.5 rounded"
+              >NEW</span
+            >
+          </a>
+          <a
+            href="#chat"
+            class="bg-gray-800/50 hover:bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-all"
+          >
+            <i class="fas fa-comments text-purple-400 mr-2"></i>AI Chat
+            <span
+              class="ml-1 text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded"
               >NEW</span
             >
           </a>
@@ -2005,6 +2028,429 @@ Content-Type: multipart/form-data</pre
         </div>
       </div>
 
+      <!-- AI Chat Section -->
+      <div
+        id="chat"
+        class="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-800"
+      >
+        <h2
+          class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
+        >
+          <i class="fas fa-comments text-purple-400"></i>
+          AI Chat Agent
+        </h2>
+        <div
+          class="bg-purple-900/20 rounded-lg p-4 border border-purple-800/30 mb-6"
+        >
+          <p class="text-gray-300 text-sm">
+            <i class="fas fa-sparkles text-purple-400 mr-2"></i>
+            Conversational AI assistant with vision capabilities and 6
+            integrated tools for meal tracking, nutrition analytics, and
+            personalized guidance. Supports image analysis for automatic meal
+            logging.
+          </p>
+        </div>
+
+        <!-- Create Chat Session -->
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 mb-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Create Chat Session
+            </h3>
+            <span
+              class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/chat/sessions</code
+          >
+          <p class="text-gray-400 mb-4">
+            Creates a new chat session with auto-generated title.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "session": {
+    "id": "675c4a2e8f1b2c3d4e5f6789",
+    "user_id": "507f191e810c19729de860ea",
+    "title": "New Chat",
+    "created_at": "2025-12-13T10:00:00Z",
+    "updated_at": "2025-12-13T10:00:00Z",
+    "message_count": 0
+  }
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Send Message -->
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 mb-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Send Message to AI
+            </h3>
+            <span
+              class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
+              >POST</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/chat/sessions/{session_id}/messages</code
+          >
+          <p class="text-gray-400 mb-4">
+            Send a message to the AI agent. Supports text and optional image
+            analysis. AI can execute tools (meal logging, stats, reports) and
+            return formatted responses.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}
+Content-Type: application/json</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">
+              Request Body:
+            </h4>
+            <pre
+              class="bg-gray-950 text-blue-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "content": "Can you log this meal?",
+  "image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/..." // Optional
+}</code></pre>
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "user_message": {
+    "id": "675c4a2e8f1b2c3d4e5f6790",
+    "session_id": "675c4a2e8f1b2c3d4e5f6789",
+    "role": "user",
+    "content": "Can you log this meal?",
+    "image_url": "data:image/jpeg;base64,...",
+    "created_at": "2025-12-13T10:00:00Z"
+  },
+  "assistant_message": {
+    "id": "675c4a2e8f1b2c3d4e5f6791",
+    "session_id": "675c4a2e8f1b2c3d4e5f6789",
+    "role": "assistant",
+    "content": "I've logged your meal! 🍔\n\n**Nutrition Summary:**\n- Calories: 550\n- Protein: 25g\n- Carbs: 45g\n- Fat: 30g",
+    "tool_calls": [
+      {
+        "tool_name": "LOG_MEAL",
+        "parameters": {
+          "meal_type": "lunch",
+          "food_name": "Cheeseburger",
+          "calories": 550,
+          "protein_g": 25,
+          "carbs_g": 45,
+          "fat_g": 30
+        },
+        "result": {
+          "success": true,
+          "meal_id": "675c4a2e8f1b2c3d4e5f6792"
+        }
+      }
+    ],
+    "created_at": "2025-12-13T10:00:05Z"
+  }
+}</code></pre>
+          </div>
+          <div
+            class="bg-purple-900/20 rounded-lg p-3 border border-purple-800/30 mb-4"
+          >
+            <p class="text-sm text-purple-300">
+              <i class="fas fa-info-circle mr-2"></i>
+              <strong>AI Tools:</strong> The AI can automatically execute:
+              LOG_MEAL, GET_MEAL_LOGS, GET_NUTRITION_STATS
+              (daily/weekly/monthly/yearly), GET_HEALTH_PROFILE,
+              GENERATE_REPORT, CHECK_GOAL_PROGRESS
+            </p>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Chat Sessions -->
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 mb-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Chat Sessions
+            </h3>
+            <span
+              class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/chat/sessions</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves all chat sessions for the authenticated user, sorted by
+            most recent.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "sessions": [
+    {
+      "id": "675c4a2e8f1b2c3d4e5f6789",
+      "user_id": "507f191e810c19729de860ea",
+      "title": "Meal Logging And Stats",
+      "created_at": "2025-12-13T10:00:00Z",
+      "updated_at": "2025-12-13T10:30:00Z",
+      "message_count": 8
+    }
+  ]
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Get Chat Messages -->
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 mb-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Get Chat Messages
+            </h3>
+            <span
+              class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
+              >GET</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/chat/sessions/{session_id}/messages</code
+          >
+          <p class="text-gray-400 mb-4">
+            Retrieves all messages in a chat session, including tool calls and
+            execution results.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "messages": [
+    {
+      "id": "675c4a2e8f1b2c3d4e5f6790",
+      "session_id": "675c4a2e8f1b2c3d4e5f6789",
+      "role": "user",
+      "content": "What did I eat today?",
+      "image_url": null,
+      "tool_calls": [],
+      "created_at": "2025-12-13T10:00:00Z"
+    },
+    {
+      "id": "675c4a2e8f1b2c3d4e5f6791",
+      "session_id": "675c4a2e8f1b2c3d4e5f6789",
+      "role": "assistant",
+      "content": "Here's your nutrition for today:\n- **Calories:** 1,850 / 2,000\n- **Protein:** 120g / 150g\n- **Carbs:** 180g / 250g\n- **Fat:** 65g / 70g",
+      "image_url": null,
+      "tool_calls": [
+        {
+          "tool_name": "GET_NUTRITION_STATS",
+          "parameters": { "period": "daily" },
+          "result": {
+            "success": true,
+            "current": { "calories": 1850, "protein_g": 120, "carbs_g": 180, "fat_g": 65 },
+            "targets": { "calories": 2000, "protein_g": 150, "carbs_g": 250, "fat_g": 70 }
+          }
+        }
+      ],
+      "created_at": "2025-12-13T10:00:05Z"
+    }
+  ]
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- Delete Chat Session -->
+        <div
+          class="bg-gray-800/50 rounded-xl p-4 sm:p-6 mb-6 border border-gray-700"
+        >
+          <div class="flex items-center justify-between mb-4 endpoint-header">
+            <h3 class="text-lg sm:text-xl font-semibold text-white">
+              Delete Chat Session
+            </h3>
+            <span
+              class="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold"
+              >DELETE</span
+            >
+          </div>
+          <code
+            class="block bg-gray-950 text-purple-300 p-3 rounded-lg mb-4 code-font"
+            >/api/chat/sessions/{session_id}</code
+          >
+          <p class="text-gray-400 mb-4">
+            Deletes a chat session and all its messages permanently.
+          </p>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Headers:</h4>
+            <pre
+              class="bg-gray-950 text-purple-300 p-3 rounded-lg code-font text-sm"
+            >
+Authorization: Bearer {jwt_token}</pre
+            >
+          </div>
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-300 mb-2">Response:</h4>
+            <pre
+              class="bg-gray-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"
+            ><code>{
+  "success": true,
+  "message": "Chat session deleted successfully"
+}</code></pre>
+          </div>
+          <div class="flex items-center gap-2 text-sm text-yellow-500">
+            <i class="fas fa-lock"></i>
+            <span>Protected endpoint - Requires authentication</span>
+          </div>
+        </div>
+
+        <!-- AI Tools Overview -->
+        <div
+          class="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl p-4 sm:p-6 border border-purple-700/50"
+        >
+          <h3
+            class="text-lg font-semibold text-white mb-4 flex items-center gap-2"
+          >
+            <i class="fas fa-magic text-purple-400"></i>
+            AI Agent Tools
+          </h3>
+          <p class="text-gray-300 mb-4 text-sm">
+            The AI agent automatically selects and executes these tools based on
+            user requests. No explicit tool invocation needed - just chat
+            naturally!
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="bg-gray-800/70 rounded-lg p-3 border border-gray-700">
+              <h4 class="text-sm font-semibold text-purple-300 mb-1">
+                <i class="fas fa-utensils mr-2"></i>LOG_MEAL
+              </h4>
+              <p class="text-xs text-gray-400">
+                Logs meals with nutrition data. Works with images - AI extracts
+                nutrition automatically.
+              </p>
+            </div>
+            <div class="bg-gray-800/70 rounded-lg p-3 border border-gray-700">
+              <h4 class="text-sm font-semibold text-blue-300 mb-1">
+                <i class="fas fa-book mr-2"></i>GET_MEAL_LOGS
+              </h4>
+              <p class="text-xs text-gray-400">
+                Retrieves past meal logs for specific dates or date ranges.
+              </p>
+            </div>
+            <div class="bg-gray-800/70 rounded-lg p-3 border border-gray-700">
+              <h4 class="text-sm font-semibold text-green-300 mb-1">
+                <i class="fas fa-chart-line mr-2"></i>GET_NUTRITION_STATS
+              </h4>
+              <p class="text-xs text-gray-400">
+                Gets nutrition stats for daily, weekly, monthly, or yearly
+                periods. Defaults to weekly.
+              </p>
+            </div>
+            <div class="bg-gray-800/70 rounded-lg p-3 border border-gray-700">
+              <h4 class="text-sm font-semibold text-red-300 mb-1">
+                <i class="fas fa-heart-pulse mr-2"></i>GET_HEALTH_PROFILE
+              </h4>
+              <p class="text-xs text-gray-400">
+                Retrieves user's health profile, goals, and dietary restrictions
+                (allergies).
+              </p>
+            </div>
+            <div class="bg-gray-800/70 rounded-lg p-3 border border-gray-700">
+              <h4 class="text-sm font-semibold text-yellow-300 mb-1">
+                <i class="fas fa-file-alt mr-2"></i>GENERATE_REPORT
+              </h4>
+              <p class="text-xs text-gray-400">
+                Generates comprehensive nutrition reports
+                (daily/weekly/monthly/yearly) with optional email delivery.
+              </p>
+            </div>
+            <div class="bg-gray-800/70 rounded-lg p-3 border border-gray-700">
+              <h4 class="text-sm font-semibold text-cyan-300 mb-1">
+                <i class="fas fa-bullseye mr-2"></i>CHECK_GOAL_PROGRESS
+              </h4>
+              <p class="text-xs text-gray-400">
+                Checks progress towards user's daily nutrition and health goals.
+              </p>
+            </div>
+          </div>
+          <div
+            class="mt-4 bg-gray-800/50 rounded-lg p-3 border border-gray-700"
+          >
+            <p class="text-xs text-gray-300">
+              <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+              <strong>Note:</strong> For meal suggestions or general nutrition
+              questions, the AI responds naturally without tools, considering
+              your health profile and allergies.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- System Section -->
       <div
         id="status"
@@ -2044,7 +2490,7 @@ Content-Type: multipart/form-data</pre
             ><code>{
   "status": "healthy",
   "service": "Alimentify API",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "timestamp": "2025-01-01T12:00:00Z",
   "environment": "production"
 }</code></pre>
@@ -2065,7 +2511,7 @@ Content-Type: multipart/form-data</pre
           class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
         >
           <i class="fas fa-laptop-code text-pink-400"></i>
-          Frontend Features (v0.7.0)
+          Frontend Features (v0.8.0)
         </h2>
         <p class="text-gray-400 mb-6">
           The Alimentify frontend includes additional features that enhance the
@@ -2210,7 +2656,7 @@ Content-Type: multipart/form-data</pre
       <div
         class="text-center text-gray-500 text-sm py-8 border-t border-gray-800"
       >
-        <p class="mb-2">Alimentify Backend API Documentation v0.7.0</p>
+        <p class="mb-2">Alimentify Backend API Documentation v0.8.0</p>
         <p class="mb-2">Built with Rust, Axum & MongoDB</p>
         <div class="flex items-center justify-center gap-4 mt-3 text-xs">
           <span
