@@ -10,6 +10,7 @@ mod services;
 use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{ layer::SubscriberExt, util::SubscriberInitExt };
+use axum::extract::DefaultBodyLimit;
 
 use config::Config;
 use db::AppState;
@@ -75,6 +76,7 @@ async fn main() {
 
     let app = routes
         ::create_routes(state.clone())
+        .layer(DefaultBodyLimit::max(25 * 1024 * 1024)) 
         .layer(middleware::cors::setup_cors(&config))
         .layer(TraceLayer::new_for_http());
 
