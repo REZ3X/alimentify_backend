@@ -4,3 +4,4 @@ pub mod gemini_service;
 pub mod fdc_service;
 pub mod ninja_service;
 pub mod mealdb_service;
+pub mod chat_agent_service;

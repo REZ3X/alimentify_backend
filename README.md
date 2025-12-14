@@ -2,7 +2,7 @@
 
 A secure, high-performance REST API backend for the Alimentify nutrition tracking application, built with Rust, Axum, MongoDB, and Redis. This backend provides comprehensive nutrition data, AI-powered food scanning, meal tracking, health profile management, and secure user authentication.
 
-## 🌟 Current Version: v0.7.0
+## 🌟 Current Version: v0.8.0
 
 ## 🚀 Tech Stack
 
@@ -37,7 +37,9 @@ A secure, high-performance REST API backend for the Alimentify nutrition trackin
 - **📊 Analytics** - Daily, weekly, monthly, yearly statistics
 - **📈 Reports** - AI-generated nutrition reports with insights
 - **🤖 AI Food Scanning** - Analyze food images with Gemini AI
-- **🔍 Nutrition Search** - Query nutrition data from API Ninjas
+- **� AI Chat Agent** - Conversational assistant with 6 integrated tools
+- **🖼️ Image Analysis** - Automatic meal logging from food photos
+- **�🔍 Nutrition Search** - Query nutrition data from API Ninjas
 - **📚 Food Wiki** - Browse USDA FoodData Central database
 - **🍳 Recipes** - Search recipes from TheMealDB
 
@@ -59,6 +61,7 @@ alimentify_backend/
 │   │   ├── health.rs        # Health profile management
 │   │   ├── meals.rs         # Meal logging & analytics
 │   │   ├── reports.rs       # AI-generated reports
+│   │   ├── chat.rs          # AI chat agent endpoints
 │   │   ├── nutrition.rs     # Food scanning with Gemini AI
 │   │   ├── nutrition_info.rs # Ninja API nutrition search
 │   │   ├── food_wiki.rs     # FoodData Central search
@@ -113,10 +116,18 @@ alimentify_backend/
    - Batch food queries
 
 6. **MealDB Service** (`mealdb_service.rs`)
+
    - Search recipes by name
    - Get random recipes
    - Filter by category or area/cuisine
    - Get detailed recipe with ingredients and instructions
+
+7. **Chat Agent Service** (`chat_agent_service.rs`)
+   - Conversational AI with Gemini 3 Pro Preview
+   - Image analysis for meal logging
+   - 6 integrated tools: LOG_MEAL, GET_MEAL_LOGS, GET_NUTRITION_STATS, GET_HEALTH_PROFILE, GENERATE_REPORT, CHECK_GOAL_PROGRESS
+   - Multi-period support (daily/weekly/monthly/yearly)
+   - Markdown-formatted responses with tool execution tracking
 
 ## 🔧 Installation & Setup
 
@@ -236,7 +247,7 @@ GET /status
 {
   "status": "healthy",
   "service": "Alimentify API",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "timestamp": "2025-01-01T12:00:00Z",
   "environment": "production"
 }
@@ -539,7 +550,122 @@ Authorization: Bearer <token>
 
 ---
 
-### 🍎 Nutrition Endpointsnts
+### 💬 AI Chat Agent Endpoints
+
+#### Create Chat Session
+
+```http
+POST /api/chat/sessions
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "session": {
+    "id": "675c4a2e8f1b2c3d4e5f6789",
+    "user_id": "507f191e810c19729de860ea",
+    "title": "New Chat",
+    "created_at": "2025-12-13T10:00:00Z",
+    "updated_at": "2025-12-13T10:00:00Z",
+    "message_count": 0
+  }
+}
+```
+
+#### Send Message to AI
+
+```http
+POST /api/chat/sessions/{session_id}/messages
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "content": "Can you log this meal?",
+  "image": "data:image/jpeg;base64,..." // Optional
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "user_message": {
+    "id": "675c4a2e8f1b2c3d4e5f6790",
+    "role": "user",
+    "content": "Can you log this meal?",
+    "image_url": "data:image/jpeg;base64,...",
+    "created_at": "2025-12-13T10:00:00Z"
+  },
+  "assistant_message": {
+    "id": "675c4a2e8f1b2c3d4e5f6791",
+    "role": "assistant",
+    "content": "I've logged your meal! 🍔\n\n**Nutrition Summary:**\n- Calories: 550\n- Protein: 25g",
+    "tool_calls": [
+      {
+        "tool_name": "LOG_MEAL",
+        "parameters": {...},
+        "result": {"success": true, "meal_id": "..."}
+      }
+    ],
+    "created_at": "2025-12-13T10:00:05Z"
+  }
+}
+```
+
+**AI Tools Available:**
+
+- `LOG_MEAL` - Log meals with nutrition data (works with images)
+- `GET_MEAL_LOGS` - Retrieve past meal logs
+- `GET_NUTRITION_STATS` - Get stats for daily/weekly/monthly/yearly periods
+- `GET_HEALTH_PROFILE` - Get user's health profile and goals
+- `GENERATE_REPORT` - Generate nutrition reports with optional email
+- `CHECK_GOAL_PROGRESS` - Check progress towards nutrition goals
+
+#### Get Chat Sessions
+
+```http
+GET /api/chat/sessions
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "sessions": [
+    {
+      "id": "675c4a2e8f1b2c3d4e5f6789",
+      "title": "Meal Logging And Stats",
+      "created_at": "2025-12-13T10:00:00Z",
+      "updated_at": "2025-12-13T10:30:00Z",
+      "message_count": 8
+    }
+  ]
+}
+```
+
+#### Get Chat Messages
+
+```http
+GET /api/chat/sessions/{session_id}/messages
+Authorization: Bearer <token>
+```
+
+#### Delete Chat Session
+
+```http
+DELETE /api/chat/sessions/{session_id}
+Authorization: Bearer <token>
+```
+
+---
+
+### 🍎 Nutrition Endpoints
 
 #### Analyze Food Image (Gemini AI)
 
@@ -861,6 +987,7 @@ Authorization: Bearer <token>
      - `/api/health/*`
      - `/api/meals/*`
      - `/api/reports/*`
+     - `/api/chat/*`
      - `/api/nutrition/*`
      - `/api/nutrition-info`
      - `/api/food-wiki/*`
@@ -1050,11 +1177,12 @@ MIT License - feel free to use this project as you wish.
 | Health Profile    | 2                | Yes           |
 | Meals & Analytics | 5                | Yes           |
 | Reports           | 4                | Yes           |
+| AI Chat Agent     | 5                | Yes           |
 | AI Nutrition      | 3                | Yes           |
 | Nutrition Info    | 1                | Yes           |
 | Food Wiki         | 3                | Yes           |
 | Recipes           | 5                | Yes           |
-| **Total**         | **32 endpoints** |               |
+| **Total**         | **37 endpoints** |               |
 
 ---
 
