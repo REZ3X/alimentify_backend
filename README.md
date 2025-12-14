@@ -2,7 +2,7 @@
 
 A secure, high-performance REST API backend for the Alimentify nutrition tracking application, built with Rust, Axum, MongoDB, and Redis. This backend provides comprehensive nutrition data, AI-powered food scanning, meal tracking, health profile management, and secure user authentication.
 
-## 🌟 Current Version: v0.8.0
+## 🌟 Current Version: v0.8.5
 
 ## 🚀 Tech Stack
 
@@ -247,7 +247,7 @@ GET /status
 {
   "status": "healthy",
   "service": "Alimentify API",
-  "version": "0.8.0",
+  "version": "0.8.5",
   "timestamp": "2025-01-01T12:00:00Z",
   "environment": "production"
 }

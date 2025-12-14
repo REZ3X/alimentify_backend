@@ -76,8 +76,8 @@ pub async fn analyze_food(
         AppError::BadRequest("No image provided. Please upload an image file.".to_string())
     })?;
 
-    if image_data.len() > 10 * 1024 * 1024 {
-        return Err(AppError::BadRequest("Image too large. Maximum size is 10MB.".to_string()));
+    if image_data.len() > 20 * 1024 * 1024 {
+        return Err(AppError::BadRequest("Image too large. Maximum size is 20MB.".to_string()));
     }
 
     let mime_type = mime_type.unwrap_or_else(|| "image/jpeg".to_string());
@@ -93,8 +93,14 @@ pub async fn analyze_food(
         .map_err(|e| {
             tracing::error!("Gemini API error: {}", e);
             let error_msg = e.to_string();
-            if error_msg.contains("SAFETY") || error_msg.contains("blocked") || error_msg.contains("filter") {
-                return AppError::BadRequest("This image could not be processed. Please upload a clear photo of food.".to_string());
+            if
+                error_msg.contains("SAFETY") ||
+                error_msg.contains("blocked") ||
+                error_msg.contains("filter")
+            {
+                return AppError::BadRequest(
+                    "This image could not be processed. Please upload a clear photo of food.".to_string()
+                );
             }
             AppError::InternalError(e)
         })?;
@@ -120,15 +126,18 @@ fn parse_validation_response(analysis: &str) -> (bool, Option<String>, Option<St
         if let Some(end) = analysis.rfind('}') {
             let json_str = &analysis[start..=end];
             if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(json_str) {
-                let is_valid = parsed.get("is_valid_food")
+                let is_valid = parsed
+                    .get("is_valid_food")
                     .and_then(|v| v.as_bool())
                     .unwrap_or(true);
-                
+
                 if !is_valid {
-                    let error_type = parsed.get("error_type")
+                    let error_type = parsed
+                        .get("error_type")
                         .and_then(|v| v.as_str())
                         .map(|s| s.to_string());
-                    let message = parsed.get("message")
+                    let message = parsed
+                        .get("message")
                         .and_then(|v| v.as_str())
                         .map(|s| s.to_string());
                     return (false, error_type, message);
@@ -168,8 +177,8 @@ pub async fn quick_food_check(
         AppError::BadRequest("No image provided. Please upload an image file.".to_string())
     })?;
 
-    if image_data.len() > 10 * 1024 * 1024 {
-        return Err(AppError::BadRequest("Image too large. Maximum size is 10MB.".to_string()));
+    if image_data.len() > 20 * 1024 * 1024 {
+        return Err(AppError::BadRequest("Image too large. Maximum size is 20MB.".to_string()));
     }
 
     let mime_type = mime_type.unwrap_or_else(|| "image/jpeg".to_string());
