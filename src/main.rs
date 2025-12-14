@@ -78,10 +78,10 @@ async fn main() {
         .layer(middleware::cors::setup_cors(&config))
         .layer(TraceLayer::new_for_http());
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], config.server.port));
+    let addr = format!("{}:{}", config.server.host, config.server.port);
     tracing::info!("Alimentify API server starting on {}", addr);
 
-    let listener = tokio::net::TcpListener::bind(addr).await.expect("Failed to bind to address");
+    let listener = tokio::net::TcpListener::bind(&addr).await.expect("Failed to bind to address");
 
     axum::serve(listener, app).await.expect("Failed to start server");
 }
