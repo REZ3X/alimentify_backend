@@ -53,24 +53,37 @@ pub async fn analyze_food(
 
     let mut image_data: Option<Vec<u8>> = None;
     let mut mime_type: Option<String> = None;
+    let mut field_count = 0;
 
     while
-        let Some(field) = multipart
-            .next_field().await
-            .map_err(|e| AppError::BadRequest(format!("Failed to read multipart field: {}", e)))?
+        let Some(field) = multipart.next_field().await.map_err(|e| {
+            tracing::error!("Multipart parsing error: {}", e);
+            AppError::BadRequest(
+                format!("Failed to read multipart field: {}. Please ensure you're uploading a valid image file.", e)
+            )
+        })?
     {
+        field_count += 1;
         let field_name = field.name().unwrap_or("").to_string();
+        tracing::debug!("Processing multipart field #{}: '{}'", field_count, field_name);
 
         if field_name == "image" {
             mime_type = field.content_type().map(|ct| ct.to_string());
+            tracing::debug!("Image field found with content_type: {:?}", mime_type);
 
-            let data = field
-                .bytes().await
-                .map_err(|e| AppError::BadRequest(format!("Failed to read image data: {}", e)))?;
+            let data = field.bytes().await.map_err(|e| {
+                tracing::error!("Failed to read image bytes: {}", e);
+                AppError::BadRequest(
+                    format!("Failed to read image data: {}. The image may be corrupted.", e)
+                )
+            })?;
 
+            tracing::debug!("Successfully read {} bytes from image field", data.len());
             image_data = Some(data.to_vec());
         }
     }
+
+    tracing::debug!("Processed {} multipart fields total", field_count);
 
     let image_data = image_data.ok_or_else(|| {
         AppError::BadRequest("No image provided. Please upload an image file.".to_string())
@@ -156,19 +169,32 @@ pub async fn quick_food_check(
 
     let mut image_data: Option<Vec<u8>> = None;
     let mut mime_type: Option<String> = None;
+    let mut field_count = 0;
 
     while
-        let Some(field) = multipart
-            .next_field().await
-            .map_err(|e| AppError::BadRequest(format!("Failed to read multipart field: {}", e)))?
+        let Some(field) = multipart.next_field().await.map_err(|e| {
+            tracing::error!("Multipart parsing error: {}", e);
+            AppError::BadRequest(
+                format!("Failed to read multipart field: {}. Please ensure you're uploading a valid image file.", e)
+            )
+        })?
     {
+        field_count += 1;
         let field_name = field.name().unwrap_or("").to_string();
+        tracing::debug!("Processing multipart field #{}: '{}'", field_count, field_name);
 
         if field_name == "image" {
             mime_type = field.content_type().map(|ct| ct.to_string());
-            let data = field
-                .bytes().await
-                .map_err(|e| AppError::BadRequest(format!("Failed to read image data: {}", e)))?;
+            tracing::debug!("Image field found with content_type: {:?}", mime_type);
+
+            let data = field.bytes().await.map_err(|e| {
+                tracing::error!("Failed to read image bytes: {}", e);
+                AppError::BadRequest(
+                    format!("Failed to read image data: {}. The image may be corrupted.", e)
+                )
+            })?;
+
+            tracing::debug!("Successfully read {} bytes from image field", data.len());
             image_data = Some(data.to_vec());
         }
     }
